@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void main() => runApp(ClassicalMusicPuzzle());
+import './providers/game.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  runApp(ChangeNotifierProvider(
+    create: (_) => GameProvider(sharedPreferences),
+    child: ClassicalMusicPuzzle()
+  ));
+}
 
 class ClassicalMusicPuzzle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final GameProvider gameProvider = Provider.of<GameProvider>(context);
     return MaterialApp(
       title: 'Classical Music Puzzle',
       home: Scaffold(
@@ -15,6 +28,9 @@ class ClassicalMusicPuzzle extends StatelessWidget {
           )
         )
       ),
+      locale: gameProvider.locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       themeMode: ThemeMode.system,
       theme: ThemeData(
         brightness: Brightness.light,

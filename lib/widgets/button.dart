@@ -1,4 +1,7 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/game.dart';
 
 class ButtonWidget extends StatefulWidget {
   final double? height;
@@ -9,7 +12,7 @@ class ButtonWidget extends StatefulWidget {
   final Color? backgroundColor;
   final bool shadow;
   final TextStyle? style;
-  // final TapEffect effect;
+  final TapEffect effect;
   final Function()? onPressed;
   final Widget child;
 
@@ -23,7 +26,7 @@ class ButtonWidget extends StatefulWidget {
     this.backgroundColor,
     this.shadow = true,
     this.style,
-    // this.effect = TapEffect.audio,
+    this.effect = TapEffect.audio,
     required this.onPressed,
     required this.child
   }) :super(key: key);
@@ -51,12 +54,14 @@ class _ButtonWidgetState extends State<ButtonWidget> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final GameProvider gameProvider = Provider.of<GameProvider>(context);
     return MouseRegion(
       cursor: (widget.onPressed != null) ?SystemMouseCursors.click :SystemMouseCursors.forbidden,
       child: GestureDetector(
         onTapDown: (widget.onPressed != null) ?(_) => _pressedAnimationController.forward() :null,
         onTap: (widget.onPressed != null) 
           ?() {
+            gameProvider.playEffect(AudioEffect.tap, audio: (widget.effect == TapEffect.audio || widget.effect == TapEffect.audioVibrate) ?true :false, vibrate: (widget.effect == TapEffect.vibrate || widget.effect == TapEffect.audioVibrate) ?true :false);
             widget.onPressed!();
           }
           :null,

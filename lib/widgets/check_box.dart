@@ -1,13 +1,15 @@
-import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../providers/game.dart';
 
 class CheckBoxWidget extends StatefulWidget {
   final double size;
   final BorderRadiusGeometry? borderRadius;
   final Color? backgroundColor;
   final bool shadow;
-  // final TapEffect effect;
+  final TapEffect effect;
   final bool value;
   final Function(bool)? onChanged;
 
@@ -17,7 +19,7 @@ class CheckBoxWidget extends StatefulWidget {
     this.borderRadius = const BorderRadius.all(const Radius.circular(8.0)),
     this.backgroundColor,
     this.shadow = true,
-    // this.effect = TapEffect.audio,
+    this.effect = TapEffect.audio,
     required this.value,
     required this.onChanged,
   }) :super(key: key);
@@ -57,12 +59,14 @@ class _CheckBoxWidgetState extends State<CheckBoxWidget> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final GameProvider gameProvider = Provider.of<GameProvider>(context);
     return MouseRegion(
       cursor: (widget.onChanged != null) ?SystemMouseCursors.click :SystemMouseCursors.forbidden,
       child: GestureDetector(
         onTapDown: (widget.onChanged != null) ?(_) => _pressedAnimationController.forward() :null,
         onTap: (widget.onChanged != null) 
           ?() {
+            gameProvider.playEffect(AudioEffect.tap, audio: (widget.effect == TapEffect.audio || widget.effect == TapEffect.audioVibrate) ?true :false, vibrate: (widget.effect == TapEffect.vibrate || widget.effect == TapEffect.audioVibrate) ?true :false);
             widget.onChanged!(!widget.value);
           }
           :null,
