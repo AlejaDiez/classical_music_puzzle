@@ -13,13 +13,14 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   universal_platform: ^1.0.0+1
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
     
 flutter:
-  generate: false
+  generate: true
 
   assets:
     - assets/fonts/
