@@ -1,3 +1,9 @@
 {
-    "@@locale": "es"
+    "@@locale": "es",
+    "statistics": "Estadísticas",
+    "noData": "Todavía no se ha jugado ninguna partida.",
+    "settings": "Configuración",
+    "easyMode": "Modo fácil",
+    "hardMode": "Modo difícil",
+    "licenses": "Licencias"
 }

@@ -1,3 +1,9 @@
 {
-    "@@locale": "en"
+    "@@locale": "en",
+    "statistics": "Statistics",
+    "noData": "No games have been played yet.",
+    "settings": "Settings",
+    "easyMode": "Easy mode",
+    "hardMode": "Hard mode",
+    "licenses": "Licenses"
 }

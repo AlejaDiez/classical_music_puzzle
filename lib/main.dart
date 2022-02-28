@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import './providers/game.dart';
+import './views/game.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,14 +21,7 @@ class ClassicalMusicPuzzle extends StatelessWidget {
     final GameProvider gameProvider = Provider.of<GameProvider>(context);
     return MaterialApp(
       title: 'Classical Music Puzzle',
-      home: Scaffold(
-        appBar: AppBar(title: Text("Classical Music Puzzle")),
-        body: Center(
-          child: Container(
-            child: Text('Hello World')
-          )
-        )
-      ),
+      home: GameView(),
       locale: gameProvider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -38,7 +32,7 @@ class ClassicalMusicPuzzle extends StatelessWidget {
         hintColor: Color.fromRGBO(108, 103, 94, 1.0),
         shadowColor: Color.fromRGBO(108, 103, 94, 0.2),
         textTheme: TextTheme(
-          headlineMedium: TextStyle(fontFamily: "OpenSans", fontSize: 30.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(108, 103, 94, 1.0), height: 1.0),
+          headlineLarge: TextStyle(fontFamily: "OpenSans", fontSize: 34.0, fontWeight: FontWeight.w600, color: Color.fromRGBO(108, 103, 94, 1.0), height: 1.0),
           bodyMedium: TextStyle(fontFamily: "OpenSans", fontSize: 16.0, fontWeight: FontWeight.normal, color: Color.fromRGBO(108, 103, 94, 0.6))
         )
       ),
@@ -48,7 +42,7 @@ class ClassicalMusicPuzzle extends StatelessWidget {
         hintColor: Color.fromRGBO(255, 251, 242, 1.0),
         shadowColor: Color.fromRGBO(0, 0, 0, 1.0),
         textTheme: TextTheme(
-          headlineMedium: TextStyle(fontFamily: "OpenSans", fontSize: 30.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(255, 251, 242, 1.0), height: 1.0),
+          headlineLarge: TextStyle(fontFamily: "OpenSans", fontSize: 34.0, fontWeight: FontWeight.w600, color: Color.fromRGBO(255, 251, 242, 1.0), height: 1.0),
           bodyMedium: TextStyle(fontFamily: "OpenSans", fontSize: 16.0, fontWeight: FontWeight.normal, color: Color.fromRGBO(255, 251, 242, 0.6))
         )
       )
