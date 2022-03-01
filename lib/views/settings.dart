@@ -1,11 +1,13 @@
-import 'package:classical_music_puzzle/widgets/check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../providers/game.dart';
+import '../views/license.dart';
 import '../widgets/button.dart';
+import '../widgets/check_box.dart';
+import '../widgets/dialog.dart';
 
 class SettingsView extends StatelessWidget {
   @override
@@ -100,7 +102,7 @@ class SettingsView extends StatelessWidget {
         SizedBox(height: 20.0),
         ButtonWidget(
           alignment: Alignment.center,
-          onPressed: null,
+          onPressed: () => Navigator.push(context, DialogWidget(dialogType: DialogType.slide, child: LicenseView(), canDismiss: false)),
           child: Text(AppLocalizations.of(context)!.licenses)
         )
       ]

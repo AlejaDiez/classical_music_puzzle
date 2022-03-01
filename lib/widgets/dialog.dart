@@ -40,7 +40,7 @@ class DialogWidget extends PageRouteBuilder {
             child: FittedBox(
               fit: BoxFit.contain,
               child: Container(
-                height: (MediaQuery.of(context).size.height * 0.9) - MediaQuery.of(context).padding.top,
+                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
                 decoration: BoxDecoration(
@@ -58,7 +58,7 @@ class DialogWidget extends PageRouteBuilder {
         case DialogType.popUp:
           return FadeTransition(opacity: Tween<double>(begin: 0.0, end: 1.0).animate(animation), child: SlideTransition(position: Tween<Offset>(begin: Offset(0.0, 0.05), end: Offset(0.0, 0.0)).animate(animation), child: child));
         case DialogType.slide:
-          return SlideTransition(position: Tween<Offset>(begin: Offset(0.0, ((MediaQuery.of(context).size.height * 0.9) - MediaQuery.of(context).padding.top) / MediaQuery.of(context).size.height), end: Offset(0.0, 0.0)).animate(animation), child: child);
+          return SlideTransition(position: Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0.0, 0.0)).animate(animation), child: child);
       }
     }
   );
