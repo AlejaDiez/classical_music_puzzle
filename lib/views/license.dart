@@ -21,7 +21,7 @@ class LicenseView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(AppLocalizations.of(context)!.licenses, style: Theme.of(context).textTheme.headlineLarge),
+              Text(AppLocalizations.of(context)!.licenses, style: Theme.of(context).textTheme.headlineMedium),
               ButtonWidget(
                 height: null,
                 padding: EdgeInsets.zero,

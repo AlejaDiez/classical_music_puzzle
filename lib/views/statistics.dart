@@ -21,7 +21,7 @@ class StatisticsView extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
-            child: Text(AppLocalizations.of(context)!.statistics, style: Theme.of(context).textTheme.headlineLarge)
+            child: Text(AppLocalizations.of(context)!.statistics, style: Theme.of(context).textTheme.headlineMedium)
           ),
           (gameProvider.statistics.isEmpty)
             ?Text(AppLocalizations.of(context)!.noData, style: Theme.of(context).textTheme.bodyMedium)

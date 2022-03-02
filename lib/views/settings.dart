@@ -20,7 +20,7 @@ class SettingsView extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
-          child: Text(AppLocalizations.of(context)!.settings, style: Theme.of(context).textTheme.headlineLarge)
+          child: Text(AppLocalizations.of(context)!.settings, style: Theme.of(context).textTheme.headlineMedium)
         ),
         ButtonWidget(
           alignment: Alignment.center,
