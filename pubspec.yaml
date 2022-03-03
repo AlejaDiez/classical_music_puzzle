@@ -20,6 +20,7 @@ dependencies:
   vibration: ^1.7.4-nullsafety.0
   flutter_svg: ^1.0.3
   shake: ^2.0.0
+  confetti: ^0.6.0
 
 dev_dependencies:
   flutter_test:

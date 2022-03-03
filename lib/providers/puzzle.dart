@@ -9,6 +9,7 @@ import '../models/music_sheet.dart';
 import '../models/slide_object.dart';
 import '../providers/game.dart';
 import '../utils/is_solvable.dart';
+import '../views/congratulations.dart';
 
 enum PuzzleState {play, stop}
 
@@ -121,8 +122,8 @@ class PuzzleProvider extends ChangeNotifier {
       _movements++;
       notifyListeners();
 
-      // Check if puzzle is correct
-      // TO DO
+      // Check if puzzle is complete
+      _isComplete();
     }
   }
   
@@ -151,7 +152,7 @@ class PuzzleProvider extends ChangeNotifier {
   }
 
   // Change puzzle state
-  set puzzleState(PuzzleState value) {
+  void changePuzzleState(PuzzleState value) {
     _puzzleState = value;
     if(_puzzleState == PuzzleState.play) {
       _movements = 0;
@@ -188,6 +189,39 @@ class PuzzleProvider extends ChangeNotifier {
 
     // Generate new puzzle
     _generateNewSolvableRandomPuzzle();
+  }
+
+  // Is complete
+  void _isComplete() {
+    bool _correct = false;
+
+    for(SlideObject slideObject in _slideObjects) {
+      if(slideObject.correctPoint == slideObject.currentPoint) {
+        _correct = true;
+      } else {
+        _correct = false;
+        break;
+      }
+    }
+
+    if(_correct) {
+      changePuzzleState(PuzzleState.stop);
+      _gameProvider.addStatistics(musicSheet.title + "|" + _movements.toString() + "|" + _seconds.toString());
+      Navigator.of(_context).push(PageRouteBuilder(
+        opaque: false,
+        barrierColor: Theme.of(_context).dialogBackgroundColor,
+        transitionDuration: Duration(milliseconds: 400),
+        fullscreenDialog: true,
+        barrierDismissible: false,
+        transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget page) => FadeTransition(opacity: animation, child: page),
+        pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => CongratulationsView(
+          title: musicSheet.title,
+          audio: slideObjects[0].audio,
+          movements: _movements,
+          seconds: _seconds
+        )
+      )).then((_) => changePuzzleState(PuzzleState.play));
+    }
   }
 
   // Dispose

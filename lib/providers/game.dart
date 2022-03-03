@@ -66,9 +66,9 @@ class GameProvider extends ChangeNotifier {
   void changeCurrentPuzzle(PuzzleProvider? value) {
     if(value != null) {
       this._currentPuzzle = value;
-      this._currentPuzzle!.puzzleState = PuzzleState.play;
+      this._currentPuzzle!.changePuzzleState(PuzzleState.play);
     } else if(value == null && _currentPuzzle != null) {
-      this._currentPuzzle!.puzzleState = PuzzleState.stop;
+      this._currentPuzzle!.changePuzzleState(PuzzleState.stop);
       this._currentPuzzle = null;
     }
     notifyListeners();

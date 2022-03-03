@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-import '../models/music_sheet.dart';
 import '../providers/game.dart';
 import '../views/settings.dart';
 import '../views/statistics.dart';
 import '../widgets/button.dart';
 import '../widgets/dialog.dart';
-import '../widgets/music_sheet.dart';
 
 class GameView extends StatefulWidget {
   @override
