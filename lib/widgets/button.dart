@@ -7,6 +7,7 @@ class ButtonWidget extends StatefulWidget {
   final double? height;
   final double? width;
   final EdgeInsetsGeometry? padding;
+  final BoxShape boxShape;
   final BorderRadiusGeometry? borderRadius;
   final AlignmentGeometry? alignment;
   final Color? backgroundColor;
@@ -21,6 +22,7 @@ class ButtonWidget extends StatefulWidget {
     this.height = 56.0,
     this.width,
     this.padding = const EdgeInsets.all(20.0),
+    this.boxShape = BoxShape.rectangle,
     this.borderRadius = const BorderRadius.all(const Radius.circular(8.0)),
     this.alignment,
     this.backgroundColor,
@@ -81,7 +83,8 @@ class _ButtonWidgetState extends State<ButtonWidget> with TickerProviderStateMix
             alignment: widget.alignment,
             decoration: BoxDecoration(
               color: widget.backgroundColor ??Theme.of(context).primaryColor,
-              borderRadius: widget.borderRadius,
+              shape: widget.boxShape,
+              borderRadius: (widget.boxShape == BoxShape.circle) ?null :widget.borderRadius,
               boxShadow: (widget.shadow)
                 ?[BoxShadow(
                   blurRadius: 20.0,
