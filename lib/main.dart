@@ -32,6 +32,7 @@ class ClassicalMusicPuzzle extends StatelessWidget {
         hintColor: Color.fromRGBO(108, 103, 94, 1.0),
         shadowColor: Color.fromRGBO(108, 103, 94, 0.2),
         textTheme: TextTheme(
+          headlineLarge: TextStyle(fontFamily: "OpenSans", fontSize: 60.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(255, 255, 255, 1.0), height: 1.0),
           headlineMedium: TextStyle(fontFamily: "OpenSans", fontSize: 34.0, fontWeight: FontWeight.w600, color: Color.fromRGBO(108, 103, 94, 1.0), height: 1.0),
           titleLarge: TextStyle(fontFamily: "TimesNewRoman", fontSize: 32.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(108, 103, 94, 1.0), height: 1.0),
           titleMedium: TextStyle(fontFamily: "TimesNewRoman", fontSize: 16.0, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic, color: Color.fromRGBO(108, 103, 94, 1.0), height: 1.0),
@@ -45,6 +46,7 @@ class ClassicalMusicPuzzle extends StatelessWidget {
         hintColor: Color.fromRGBO(255, 251, 242, 1.0),
         shadowColor: Color.fromRGBO(0, 0, 0, 1.0),
         textTheme: TextTheme(
+          headlineLarge: TextStyle(fontFamily: "OpenSans", fontSize: 60.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(255, 255, 255, 1.0), height: 1.0),
           headlineMedium: TextStyle(fontFamily: "OpenSans", fontSize: 34.0, fontWeight: FontWeight.w600, color: Color.fromRGBO(255, 251, 242, 1.0), height: 1.0),
           titleLarge: TextStyle(fontFamily: "TimesNewRoman", fontSize: 32.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(255, 251, 242, 1.0), height: 1.0),
           titleMedium: TextStyle(fontFamily: "TimesNewRoman", fontSize: 16.0, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic, color: Color.fromRGBO(255, 251, 242, 1.0), height: 1.0),

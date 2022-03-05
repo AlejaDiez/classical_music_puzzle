@@ -11,19 +11,24 @@ import '../providers/game.dart';
 import '../utils/is_solvable.dart';
 import '../views/congratulations.dart';
 
-enum PuzzleState {play, stop}
+enum PuzzleState {play, stop, complete}
 
 class PuzzleProvider extends ChangeNotifier {
-  PuzzleProvider(this._context, {
+  PuzzleProvider(BuildContext context, {
     required GameProvider gameProvider,
-    required this.musicSheet
+    required this.musicSheet,
+    required Function(PuzzleState) puzzleStateChange
   }) {
+    _context = context;
     _gameProvider = gameProvider;
-    _shakeDetector.startListening();
-    _generateNewSolvableRandomPuzzle();
+    _puzzleStateChange = puzzleStateChange;
+    _shakeDetector = ShakeDetector.autoStart(onPhoneShake: () {
+      if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
+    })..startListening();
+    _generateNewSolvableRandomPuzzle(false);
   }
 
-  final BuildContext _context;
+  late final BuildContext _context;
   late final GameProvider _gameProvider;
   final MusicSheet musicSheet;
 
@@ -42,7 +47,8 @@ class PuzzleProvider extends ChangeNotifier {
 
   // Variables
   PuzzleState _puzzleState = PuzzleState.stop;
-  late final ShakeDetector _shakeDetector = ShakeDetector.autoStart(onPhoneShake: (_puzzleState == PuzzleState.play) ?() => reset(effect: true) :() {});
+  late final Function(PuzzleState) _puzzleStateChange;
+  late final ShakeDetector _shakeDetector;
   int _movements = 0;
   int? _slideObjectMoving;
   late final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer()..setVolume(1.0)..isPlaying.listen((bool isPlaying) {
@@ -62,7 +68,7 @@ class PuzzleProvider extends ChangeNotifier {
   int get seconds => _seconds;
 
   // Generate a new solvable puzzle
-  void _generateNewSolvableRandomPuzzle() {
+  void _generateNewSolvableRandomPuzzle(bool effect) {
     final Random _random = Random();
     List<int> _allPossiblePositions = List.generate(musicSheet.items + 1, (index) => index); // 0 is for empty point
 
@@ -75,7 +81,10 @@ class PuzzleProvider extends ChangeNotifier {
       if(_allPossiblePositions[i] == 0) { // Change empty point
         _emptyPoint = Point(i % sqrt(musicSheet.items + 1), i ~/ sqrt(musicSheet.items + 1));
       } else { // Change slide object point
-        _slideObjects[_allPossiblePositions[i] - 1].currentPoint = Point(i % sqrt(musicSheet.items + 1), i ~/ sqrt(musicSheet.items + 1));
+        if(_slideObjects[_allPossiblePositions[i] - 1].currentPoint != Point(i % sqrt(musicSheet.items + 1), i ~/ sqrt(musicSheet.items + 1))) {
+          _slideObjects[_allPossiblePositions[i] - 1].currentPoint = Point(i % sqrt(musicSheet.items + 1), i ~/ sqrt(musicSheet.items + 1));
+          if(effect) _slideObjects[_allPossiblePositions[i] - 1].duration = Duration(milliseconds: 800);
+        }
       }
     }
     notifyListeners();
@@ -83,61 +92,65 @@ class PuzzleProvider extends ChangeNotifier {
 
   // Change slide object current point and empty point
   void changeSlideObjectPoint(int index) {
-    if(_emptyPoint.x == _slideObjects[index].currentPoint.x || _emptyPoint.y == _slideObjects[index].currentPoint.y) { // Can move
-      // Add timer if not started
-      if(_timer == null) {
-        _timer = Timer.periodic(Duration(seconds: 1), (_) {
-          _seconds++;
-          notifyListeners();
-        });
-      }
-
-      // Save old current point
-      Point _oldCurrentPoint = _slideObjects[index].currentPoint;
-
-      // Play audio and vibrate
-      _gameProvider.playEffect(AudioEffect.move);
-
-      // Change current point
-      _slideObjects.forEach((SlideObject slideObject) {
-        if(slideObject.currentPoint.x == _slideObjects[index].currentPoint.x && (_emptyPoint.y > slideObject.currentPoint.y && _slideObjects[index].currentPoint.y <= slideObject.currentPoint.y)) { // Can move down
-          slideObject.duration = Duration(milliseconds: 250);
-          slideObject.currentPoint = Point(slideObject.currentPoint.x, slideObject.currentPoint.y + 1);
-        } else if(slideObject.currentPoint.x == _slideObjects[index].currentPoint.x && (_emptyPoint.y < slideObject.currentPoint.y && _slideObjects[index].currentPoint.y >= slideObject.currentPoint.y)) { // Can move up
-          slideObject.duration = Duration(milliseconds: 250);
-          slideObject.currentPoint = Point(slideObject.currentPoint.x, slideObject.currentPoint.y - 1);
-        } else if(slideObject.currentPoint.y == _slideObjects[index].currentPoint.y && (_emptyPoint.x < slideObject.currentPoint.x && _slideObjects[index].currentPoint.x >= slideObject.currentPoint.x)) { // Can move left
-          slideObject.duration = Duration(milliseconds: 250);
-          slideObject.currentPoint = Point(slideObject.currentPoint.x - 1, slideObject.currentPoint.y);
-        } else if(slideObject.currentPoint.y == _slideObjects[index].currentPoint.y && (_emptyPoint.x > slideObject.currentPoint.x && _slideObjects[index].currentPoint.x <= slideObject.currentPoint.x)) { // Can move right
-          slideObject.duration = Duration(milliseconds: 250);
-          slideObject.currentPoint = Point(slideObject.currentPoint.x + 1, slideObject.currentPoint.y);
+    if(_puzzleState == PuzzleState.play) {
+      if(_emptyPoint.x == _slideObjects[index].currentPoint.x || _emptyPoint.y == _slideObjects[index].currentPoint.y) { // Can move
+        // Add timer if not started
+        if(_timer == null) {
+          _timer = Timer.periodic(Duration(seconds: 1), (_) {
+            _seconds++;
+            notifyListeners();
+          });
         }
-      });
 
-      // Change empty point
-      _emptyPoint = _oldCurrentPoint;
+        // Save old current point
+        Point _oldCurrentPoint = _slideObjects[index].currentPoint;
 
-      // Increase movements
-      _movements++;
-      notifyListeners();
+        // Play audio and vibrate
+        _gameProvider.playEffect(AudioEffect.move);
 
-      // Check if puzzle is complete
-      _isComplete();
+        // Change current point
+        _slideObjects.forEach((SlideObject slideObject) {
+          if(slideObject.currentPoint.x == _slideObjects[index].currentPoint.x && (_emptyPoint.y > slideObject.currentPoint.y && _slideObjects[index].currentPoint.y <= slideObject.currentPoint.y)) { // Can move down
+            slideObject.duration = Duration(milliseconds: 250);
+            slideObject.currentPoint = Point(slideObject.currentPoint.x, slideObject.currentPoint.y + 1);
+          } else if(slideObject.currentPoint.x == _slideObjects[index].currentPoint.x && (_emptyPoint.y < slideObject.currentPoint.y && _slideObjects[index].currentPoint.y >= slideObject.currentPoint.y)) { // Can move up
+            slideObject.duration = Duration(milliseconds: 250);
+            slideObject.currentPoint = Point(slideObject.currentPoint.x, slideObject.currentPoint.y - 1);
+          } else if(slideObject.currentPoint.y == _slideObjects[index].currentPoint.y && (_emptyPoint.x < slideObject.currentPoint.x && _slideObjects[index].currentPoint.x >= slideObject.currentPoint.x)) { // Can move left
+            slideObject.duration = Duration(milliseconds: 250);
+            slideObject.currentPoint = Point(slideObject.currentPoint.x - 1, slideObject.currentPoint.y);
+          } else if(slideObject.currentPoint.y == _slideObjects[index].currentPoint.y && (_emptyPoint.x > slideObject.currentPoint.x && _slideObjects[index].currentPoint.x <= slideObject.currentPoint.x)) { // Can move right
+            slideObject.duration = Duration(milliseconds: 250);
+            slideObject.currentPoint = Point(slideObject.currentPoint.x + 1, slideObject.currentPoint.y);
+          }
+        });
+
+        // Change empty point
+        _emptyPoint = _oldCurrentPoint;
+
+        // Increase movements
+        _movements++;
+        notifyListeners();
+
+        // Check if puzzle is complete
+        _isComplete();
+      }
     }
   }
   
   // Can slide
   void changeStateMovingSlideObject(int index) {
-    if((((_emptyPoint.y - _slideObjects[index].currentPoint.y).abs() == 1) && (_emptyPoint.x == _slideObjects[index].currentPoint.x)) || (((_emptyPoint.x - _slideObjects[index].currentPoint.x).abs() == 1) && (_emptyPoint.y == _slideObjects[index].currentPoint.y))) {
-      if(_slideObjectMoving == index) {
-        _slideObjects[index].duration = Duration(milliseconds: 250);
-        _slideObjectMoving = null;
-        notifyListeners();
-      } else if(_slideObjectMoving == null) {
-        _slideObjects[index].duration = Duration.zero;
-        _slideObjectMoving = index;
-        notifyListeners();
+    if(_puzzleState == PuzzleState.play) {
+      if((((_emptyPoint.y - _slideObjects[index].currentPoint.y).abs() == 1) && (_emptyPoint.x == _slideObjects[index].currentPoint.x)) || (((_emptyPoint.x - _slideObjects[index].currentPoint.x).abs() == 1) && (_emptyPoint.y == _slideObjects[index].currentPoint.y))) {
+        if(_slideObjectMoving == index) {
+          _slideObjects[index].duration = Duration(milliseconds: 250);
+          _slideObjectMoving = null;
+          notifyListeners();
+        } else if(_slideObjectMoving == null) {
+          _slideObjects[index].duration = Duration.zero;
+          _slideObjectMoving = index;
+          notifyListeners();
+        }
       }
     }
   }
@@ -152,12 +165,12 @@ class PuzzleProvider extends ChangeNotifier {
   }
 
   // Change puzzle state
-  void changePuzzleState(PuzzleState value) {
+  set puzzleState(PuzzleState value) {
     _puzzleState = value;
     if(_puzzleState == PuzzleState.play) {
       _movements = 0;
       _seconds = 0;
-      _generateNewSolvableRandomPuzzle();
+      _generateNewSolvableRandomPuzzle(false);
     } else {
       _slideObjectMoving = null;
       _audioPlayer.stop();
@@ -166,14 +179,12 @@ class PuzzleProvider extends ChangeNotifier {
       _timer?.cancel();
       _timer = null;
     }
+    _puzzleStateChange(_puzzleState);
     notifyListeners();
   }
 
   // Reset puzzle
   void reset({bool effect = false}) {
-    // Change slide object animation duration
-    _slideObjects.forEach((SlideObject slideObject) => slideObject.duration = Duration(milliseconds: 800));
-
     // Reset variables
     _movements = 0;
     _slideObjectMoving = null;
@@ -188,13 +199,12 @@ class PuzzleProvider extends ChangeNotifier {
     if(effect) _gameProvider.playEffect(AudioEffect.shake, audio: true, vibrate: true);
 
     // Generate new puzzle
-    _generateNewSolvableRandomPuzzle();
+    _generateNewSolvableRandomPuzzle(effect);
   }
 
   // Is complete
   void _isComplete() {
     bool _correct = false;
-
     for(SlideObject slideObject in _slideObjects) {
       if(slideObject.correctPoint == slideObject.currentPoint) {
         _correct = true;
@@ -203,13 +213,18 @@ class PuzzleProvider extends ChangeNotifier {
         break;
       }
     }
-
     if(_correct) {
-      changePuzzleState(PuzzleState.stop);
+      _puzzleState = PuzzleState.complete;
+      _slideObjectMoving = null;
+      _audioPlayer.stop();
+      _lastSlideObjectPlaying = 0;
+      _slideObjectPlaying = null;
+      _timer?.cancel();
+      _timer = null;
       _gameProvider.addStatistics(musicSheet.title + "|" + _movements.toString() + "|" + _seconds.toString());
       Navigator.of(_context).push(PageRouteBuilder(
         opaque: false,
-        barrierColor: Theme.of(_context).dialogBackgroundColor,
+        barrierColor: Color.fromRGBO(0, 0, 0, 0.8),
         transitionDuration: Duration(milliseconds: 400),
         fullscreenDialog: true,
         barrierDismissible: false,
@@ -220,7 +235,10 @@ class PuzzleProvider extends ChangeNotifier {
           movements: _movements,
           seconds: _seconds
         )
-      )).then((_) => changePuzzleState(PuzzleState.play));
+      )).then((_) {
+        _puzzleState = PuzzleState.play;
+        reset(effect: true);
+      });
     }
   }
 

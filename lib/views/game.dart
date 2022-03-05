@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+
+import '../models/music_sheet.dart';
 import '../providers/game.dart';
+import '../providers/puzzle.dart';
 import '../views/settings.dart';
 import '../views/statistics.dart';
 import '../widgets/button.dart';
 import '../widgets/dialog.dart';
+import '../widgets/music_sheet.dart';
+import 'congratulations.dart';
 
 class GameView extends StatefulWidget {
   @override
@@ -45,20 +50,22 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final GameProvider gameProvider = Provider.of<GameProvider>(context);
-    if(gameProvider.currentPuzzle == null && _backOpacityAnimationController.isCompleted && _backSlideAnimationController.isCompleted && _resetOpacityAnimationController.isCompleted) {
-      _backOpacityAnimationController.reverse();
-      _backSlideAnimationController.reverse();
-      _resetOpacityAnimationController.reverse();
-    } else if(gameProvider.currentPuzzle != null && _backOpacityAnimationController.value == 0.0 && _backSlideAnimationController.value == 0.0 && _resetOpacityAnimationController.value == 0.0) {
-      _backOpacityAnimationController.forward();
-      _backSlideAnimationController.value = 1.0;
-      _resetOpacityAnimationController.forward();
-    }
+    final GameProvider gameProvider = Provider.of<GameProvider>(context)..currentPuzzleChange = (PuzzleProvider? puzzleProvider) {
+      if(puzzleProvider == null) {
+        _backOpacityAnimationController.reverse();
+        _backSlideAnimationController.reverse();
+        _resetOpacityAnimationController.reverse();
+      } else {
+        _backOpacityAnimationController.forward();
+        _backSlideAnimationController.value = 1.0;
+        _resetOpacityAnimationController.forward();
+      }
+    };
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       color: Theme.of(context).primaryColor,
+      padding: MediaQuery.of(context).padding,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -66,15 +73,29 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
             builder: (_, BoxConstraints constraints) {
               late double _size;
               if(constraints.maxWidth <= 768.0) {
-                if(constraints.maxHeight * 0.9 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
-                else _size = constraints.maxHeight * 0.9;
+                if(constraints.maxHeight * 0.8 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
+                else _size = constraints.maxHeight * 0.8;
               } else {
-                if(constraints.maxWidth * 0.9 >= 3 * (constraints.maxHeight * 0.9) / 4) _size = constraints.maxHeight * 0.9;
-                else _size = constraints.maxWidth * 0.9;
+                if(constraints.maxWidth * 0.8 >= 3 * (constraints.maxHeight * 0.8) / 4) _size = constraints.maxHeight * 0.8;
+                else _size = constraints.maxWidth * 0.8;
               }
               return PageView(
                 physics: BouncingScrollPhysics(),
-                children: []
+                children: [
+                  MusicSheetWidget(
+                    MusicSheet(
+                      title: "Symphony No. 5",
+                      author: "L. van Beethoven",
+                      items: 15,
+                      imagePath: "assets/images/symphony_no_5_",
+                      imageExtension: ".svg",
+                      audioPath: "assets/sounds/symphony_no_5_",
+                      audioExtension: ".mp3"
+                    ),
+                    size: _size,
+                    backgroundColor: (Theme.of(context).brightness == Brightness.light) ?Color.fromRGBO(231, 58, 45, 1.0) :Color.fromRGBO(88, 14, 8, 1.0),
+                  )
+                ]
               );
             }
           ),
@@ -114,31 +135,34 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                       child: SvgPicture.asset("assets/icons/back.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                     )
                   ),
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
-                    builder: (_, Widget? child) => Visibility(
-                      visible: _backOpacityAnimation.value != 0.0,
-                      child: FadeTransition(
-                        opacity: _resetOpacityAnimation,
-                        child: RotationTransition(
-                          turns: _resetRotateAnimation,
-                          child: child!
+                  Visibility(
+                    visible: MediaQuery.of(context).size.width > 768.0,
+                    child: AnimatedBuilder(
+                      animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
+                      builder: (_, Widget? child) => Visibility(
+                        visible: _backOpacityAnimation.value != 0.0,
+                        child: FadeTransition(
+                          opacity: _resetOpacityAnimation,
+                          child: RotationTransition(
+                            turns: _resetRotateAnimation,
+                            child: child!
+                          )
                         )
+                      ),
+                      child: ButtonWidget(
+                        height: null,
+                        width: null,
+                        padding: const EdgeInsets.all(20.0),
+                        borderRadius: BorderRadius.zero,
+                        backgroundColor: Colors.transparent,
+                        effect: TapEffect.none,
+                        shadow: false,
+                        onPressed: () {
+                          gameProvider.currentPuzzle!.reset(effect: true);
+                          _resetRotateAnimationController.forward().then((_) => _resetRotateAnimationController.reverse());
+                        },
+                        child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                       )
-                    ),
-                    child: ButtonWidget(
-                      height: null,
-                      width: null,
-                      padding: const EdgeInsets.all(20.0),
-                      borderRadius: BorderRadius.zero,
-                      backgroundColor: Colors.transparent,
-                      effect: TapEffect.none,
-                      shadow: false,
-                      onPressed: () {
-                        gameProvider.currentPuzzle!.reset(effect: true);
-                        _resetRotateAnimationController.forward().then((_) => _resetRotateAnimationController.reverse());
-                      },
-                      child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                     )
                   ),
                   Expanded(child: SizedBox()),
@@ -149,7 +173,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.zero,
                     backgroundColor: Colors.transparent,
                     shadow: false,
-                    onPressed: () => Navigator.push(context, DialogWidget(dialogType: DialogType.popUp, child: StatisticsView())).whenComplete(() => _rotateAnimationController.reverse()),
+                    onPressed: () => Navigator.push(context, DialogWidget(StatisticsView(), padding: EdgeInsets.zero)).whenComplete(() => _rotateAnimationController.reverse()),
                     child: SvgPicture.asset("assets/icons/statistics.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                   ),
                   AnimatedBuilder(
@@ -167,7 +191,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                       shadow: false,
                       onPressed: () {
                         _rotateAnimationController.forward();
-                        Navigator.push(context, DialogWidget(dialogType: DialogType.popUp, child: SettingsView())).whenComplete(() => _rotateAnimationController.reverse());
+                        Navigator.push(context, DialogWidget(SettingsView())).whenComplete(() => _rotateAnimationController.reverse());
                       },
                       child: SvgPicture.asset("assets/icons/settings.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                     )
