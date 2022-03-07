@@ -8,7 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/game.dart';
 import '../utils/time.dart';
 
-class StatisticsView extends StatelessWidget {
+class AchievementsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GameProvider gameProvider = Provider.of<GameProvider>(context);
@@ -21,7 +21,7 @@ class StatisticsView extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
-            child: Text(AppLocalizations.of(context)!.statistics, style: Theme.of(context).textTheme.headlineMedium!),
+            child: Text(AppLocalizations.of(context)!.achievements, style: Theme.of(context).textTheme.headlineMedium!),
           ),
           (gameProvider.statistics.isEmpty)
             ?Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,8 +21,19 @@ class ClassicalMusicPuzzle extends StatelessWidget {
   Widget build(BuildContext context) {
     final GameProvider gameProvider = Provider.of<GameProvider>(context);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Classical Music Puzzle',
       home: GameView(),
+      builder: (BuildContext context, Widget? home) {
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent, 
+          statusBarIconBrightness: (Theme.of(context).brightness == Brightness.light) ?Brightness.dark :Brightness.light,
+          statusBarBrightness: Theme.of(context).brightness
+        ));
+        if(MediaQuery.of(context).size.shortestSide <= 768.0) SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+        else SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.landscapeRight, DeviceOrientation.portraitDown, DeviceOrientation.landscapeLeft]);
+        return home!;
+      },
       locale: gameProvider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

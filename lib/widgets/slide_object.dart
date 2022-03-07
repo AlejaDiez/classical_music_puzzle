@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -301,7 +302,7 @@ class _SlideObjectWidgetState extends State<SlideObjectWidget> with TickerProvid
   void initState() {
     _scaleAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 150));
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(CurvedAnimation(parent: _scaleAnimationController, curve: Curves.decelerate));
-    _jiggleAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    _jiggleAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 260));
     _jiggleAnimationStep1 = Tween<double>(begin: 0.0, end: -0.008).animate(CurvedAnimation(parent: _jiggleAnimationController, curve: const Interval(0.0, 0.25, curve: Curves.easeIn)));
     _jiggleAnimationStep2 = Tween<double>(begin: -0.008, end: 0.013).animate(CurvedAnimation(parent: _jiggleAnimationController, curve: const Interval(0.25, 0.75, curve: Curves.easeOut)));
     _jiggleAnimationStep3 = Tween<double>(begin: 0.013, end: 0.0).animate(CurvedAnimation(parent: _jiggleAnimationController, curve: const Interval(0.75, 1.0, curve: Curves.easeIn)));
@@ -401,6 +402,7 @@ class _SlideObjectWidgetState extends State<SlideObjectWidget> with TickerProvid
               },
               child: Container(
                 margin: widget.margin,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: widget.borderRadius,
@@ -437,18 +439,18 @@ class _SlideObjectWidgetState extends State<SlideObjectWidget> with TickerProvid
                               child: child!
                             );
                           },
-                          child: SvgPicture.asset("assets/icons/quaver.svg", height: widget.size * 0.1, width: widget.size * 0.1, color: Theme.of(context).hintColor.withOpacity(0.2)) 
+                          child: SvgPicture.asset("assets/icons/quaver.svg", height: widget.size * 0.1, width: widget.size * 0.1, color: (Theme.of(context).brightness == Brightness.light) ?Color.fromRGBO(220, 216, 208, 1.0) :Color.fromRGBO(50, 46, 47, 1.0)) 
                         )
                       )
                     ),
                     Positioned(
-                      top: widget.size * 0.05,
-                      right: widget.size * 0.05,
+                      top: widget.size * 0.04,
+                      right: widget.size * 0.04,
                       child: AnimatedOpacity(
                         opacity: gameProvider.easyMode ?1.0 :0.0,
-                        duration: Duration(milliseconds: 400),
+                        duration: Duration(milliseconds: 200),
                         curve: Curves.decelerate,
-                        child: Text((widget.index + 1).toString(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: widget.size * 0.12, fontWeight: FontWeight.bold, color: Theme.of(context).hintColor.withOpacity(0.2), height: 1.0))
+                        child: Text((widget.index + 1).toString(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: widget.size * 0.12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.light) ?Color.fromRGBO(220, 216, 208, 1.0) :Color.fromRGBO(50, 46, 47, 1.0), height: 1.0))
                       )
                     )
                   ]

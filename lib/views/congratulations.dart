@@ -133,7 +133,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                   ]
                 )
               ),
-              SizedBox(height: 20.0 * 4),
+              SizedBox(height: 20.0 * 5),
               AnimatedBuilder(
                 animation: Listenable.merge([_animationController, _closeAnimationController]),
                 builder: (_, Widget? child) {
@@ -147,7 +147,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                       height: null,
                       boxShape: BoxShape.circle,
                       effect: TapEffect.none,
-                      padding: EdgeInsets.all(25.0),
+                      padding: EdgeInsets.all(40.0),
                       onPressed: () => _closeAnimationController.forward(),
                       child: FadeTransition(
                         opacity: _opacityCloseAnimation,
@@ -156,7 +156,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                     )
                   );
                 },
-                child: SvgPicture.asset("assets/icons/reset.svg", height: 31.25, width: 31.25, color: Theme.of(context).hintColor)
+                child: SvgPicture.asset("assets/icons/reset.svg", height: 40.0, width: 40.0, color: Theme.of(context).hintColor)
               )
             ]
           )

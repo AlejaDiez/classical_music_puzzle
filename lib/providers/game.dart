@@ -29,7 +29,7 @@ class GameProvider extends ChangeNotifier {
   late bool _easyMode = sharedPreferences.getBool('easy mode') ??true;
   late List<String> _statistics = sharedPreferences.getStringList('statistics') ??[];
   PuzzleProvider? _currentPuzzle;
-  late Function(PuzzleProvider?) currentPuzzleChange;
+  late Function(PuzzleProvider?) onCurrentPuzzleChange;
 
   Locale get locale => _locale;
   bool? get vibrate => _vibrate;
@@ -79,7 +79,7 @@ class GameProvider extends ChangeNotifier {
       _currentPuzzle!.puzzleState = PuzzleState.stop;
       _currentPuzzle = null;
     }
-    currentPuzzleChange(_currentPuzzle);
+    onCurrentPuzzleChange(_currentPuzzle);
     notifyListeners();
   }
 

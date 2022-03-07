@@ -24,7 +24,7 @@ class PuzzleProvider extends ChangeNotifier {
     _puzzleStateChange = puzzleStateChange;
     _shakeDetector = ShakeDetector.autoStart(onPhoneShake: () {
       if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
-    })..startListening();
+    });
     _generateNewSolvableRandomPuzzle(false);
   }
 
@@ -248,6 +248,6 @@ class PuzzleProvider extends ChangeNotifier {
     _timer?.cancel();
     _shakeDetector.stopListening();
     _audioPlayer.dispose();
-    super.dispose();
+    Future.microtask(() => super.dispose());
   }
 }
