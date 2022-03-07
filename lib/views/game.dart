@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -18,8 +20,8 @@ class GameView extends StatefulWidget {
 
 class _GameViewState extends State<GameView> with TickerProviderStateMixin {
   late final PageController _pageController;
-  late final AnimationController _navigationBarAniamtionController, _backOpacityAnimationController, _backSlideAnimationController, _resetOpacityAnimationController, _resetRotateAnimationController, _settingsAnimationController;
-  late final Animation<double> _navigationBarOpacityAniamtion, _backOpacityAnimation, _resetOpacityAnimation, _resetRotateAnimation, _settingsAnimation;
+  late final AnimationController _navigationBarAniamtionController, _backOpacityAnimationController, _backSlideAnimationController, _resetOpacityAnimationController, _resetRotateAnimationController, _settingsAnimationController, _initialAnimationController;
+  late final Animation<double> _navigationBarOpacityAniamtion, _backOpacityAnimation, _resetOpacityAnimation, _resetRotateAnimation, _settingsAnimation, _initialScaleAnimation, _initialAngleAnimation, _initialTranslationAnimation;
   late final Animation<Offset> _navigationBarOffsetAniamtion, _backOffsetAnimation;
   double _page = 0.0;
 
@@ -39,6 +41,10 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
     _resetRotateAnimation = Tween(begin: 0.0, end: 0.25).animate(CurvedAnimation(parent: _resetRotateAnimationController, curve: Curves.decelerate));
     _settingsAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     _settingsAnimation = Tween(begin: 0.0, end: 0.25).animate(CurvedAnimation(parent: _settingsAnimationController, curve: Curves.decelerate));
+    _initialAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 800))..forward();
+    _initialScaleAnimation = Tween(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
+    _initialAngleAnimation = Tween(begin: 0.15, end: 0.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
+    _initialTranslationAnimation = Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
     super.initState();
   }
 
@@ -52,6 +58,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
     _resetOpacityAnimationController.dispose();
     _resetRotateAnimationController.dispose();
     _settingsAnimationController.dispose();
+    _initialAnimationController.dispose();
     super.dispose();
   }
 
@@ -77,49 +84,66 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          LayoutBuilder(
-            builder: (_, BoxConstraints constraints) {
-              late double _size;
-              if(constraints.maxWidth <= 768.0) {
-                if(constraints.maxHeight * 0.8 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
-                else _size = constraints.maxHeight * 0.8;
-              } else {
-                if(constraints.maxWidth * 0.8 >= 3 * (constraints.maxHeight * 0.8) / 4) _size = constraints.maxHeight * 0.8;
-                else _size = constraints.maxWidth * 0.8;
+          AnimatedBuilder(
+            animation: _initialAnimationController,
+            builder: (_, Widget? child) => Transform(
+              transform: Matrix4.translationValues(_initialTranslationAnimation.value * MediaQuery.of(context).size.width, 0.0, 0.0)..scale(_initialScaleAnimation.value)..rotateZ(_initialAngleAnimation.value),
+              alignment: Alignment.bottomCenter,
+              child: child
+            ),
+            child: LayoutBuilder(
+              builder: (_, BoxConstraints constraints) {
+                late double _size;
+                if(constraints.maxWidth <= 768.0) {
+                  if(constraints.maxHeight * 0.84 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
+                  else _size = constraints.maxHeight * 0.84;
+                } else {
+                  if(constraints.maxWidth * 0.84 >= 3 * (constraints.maxHeight * 0.84) / 4) _size = constraints.maxHeight * 0.84;
+                  else _size = constraints.maxWidth * 0.84;
+                }
+                return PageView(
+                  controller: _pageController,
+                  physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
+                  clipBehavior: Clip.none,
+                  children: [
+                    Transform(
+                      transform: Matrix4.identity()..scale(lerpDouble(1.0, 0.6, _page.clamp(0.0, 1.0)))..rotateZ(lerpDouble(0.0, -0.16, _page.clamp(0.0, 1.0))!),
+                      alignment: Alignment.bottomCenter,
+                      child: MusicSheetWidget(
+                        MusicSheet(
+                          title: "Symphony No. 40",
+                          author: "W. Amadeus Mozart",
+                          items: 8,
+                          imagePath: "assets/images/symphony_no_40_",
+                          imageExtension: ".svg",
+                          audioPath: "assets/sounds/symphony_no_40_",
+                          audioExtension: ".mp3"
+                        ),
+                        size: _size,
+                        backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
+                      )
+                    ),
+                    Transform(
+                      transform: Matrix4.identity()..scale(lerpDouble(0.6, 1.0, _page.clamp(0.0, 1.0))!)..rotateZ(lerpDouble(0.16, 0.0, _page.clamp(0.0, 1.0))!),
+                      alignment: Alignment.bottomCenter,
+                      child: MusicSheetWidget(
+                        MusicSheet(
+                          title: "Symphony No. 5",
+                          author: "L. van Beethoven",
+                          items: 15,
+                          imagePath: "assets/images/symphony_no_5_",
+                          imageExtension: ".svg",
+                          audioPath: "assets/sounds/symphony_no_5_",
+                          audioExtension: ".mp3"
+                        ),
+                        size: _size,
+                        backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
+                      )
+                    )
+                  ]
+                );
               }
-              return PageView(
-                controller: _pageController,
-                physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
-                children: [
-                  MusicSheetWidget(
-                    MusicSheet(
-                      title: "Symphony No. 40",
-                      author: "W. Amadeus Mozart",
-                      items: 8,
-                      imagePath: "assets/images/symphony_no_5_",
-                      imageExtension: ".svg",
-                      audioPath: "assets/sounds/symphony_no_5_",
-                      audioExtension: ".mp3"
-                    ),
-                    size: _size,
-                    backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
-                  ),
-                  MusicSheetWidget(
-                    MusicSheet(
-                      title: "Symphony No. 5",
-                      author: "L. van Beethoven",
-                      items: 15,
-                      imagePath: "assets/images/symphony_no_5_",
-                      imageExtension: ".svg",
-                      audioPath: "assets/sounds/symphony_no_5_",
-                      audioExtension: ".mp3"
-                    ),
-                    size: _size,
-                    backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
-                  )
-                ]
-              );
-            }
+            )
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -182,61 +206,33 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                     )
                   ),
                   SizedBox(width: 20.0),
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 200),
-                    switchInCurve: Curves.decelerate,
-                    switchOutCurve: Curves.decelerate,
-                    child: Visibility(
-                      key: ValueKey(((MediaQuery.of(context).size.width >= 1024) || (gameProvider.shake == false))),
-                      visible: ((MediaQuery.of(context).size.width >= 1024) || (gameProvider.shake == false)),
-                      child: AnimatedBuilder(
-                        animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
-                        builder: (_, Widget? child) => Visibility(
-                          visible: _resetOpacityAnimationController.value != 0.0,
-                          child: FadeTransition(
-                            opacity: _resetOpacityAnimation,
-                            child: RotationTransition(
-                              turns: _resetRotateAnimation,
-                              child: child!
-                            )
-                          )
-                        ),
-                        child: ButtonWidget(
-                          height: null,
-                          padding: EdgeInsets.all(10.0),
-                          borderRadius: BorderRadius.zero,
-                          shadow: false,
-                          effect: TapEffect.none,
-                          backgroundColor: Colors.transparent,
-                          onPressed: () {
-                            gameProvider.currentPuzzle!.reset(effect: true);
-                            _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
-                          },
-                          child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
+                  AnimatedBuilder(
+                    animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
+                    builder: (_, Widget? child) => Visibility(
+                      visible: (_resetOpacityAnimationController.value != 0.0) && (!gameProvider.shake || MediaQuery.of(context).size.width >= 1024.0),
+                      child: FadeTransition(
+                        opacity: _resetOpacityAnimation,
+                        child: RotationTransition(
+                          turns: _resetRotateAnimation,
+                          child: child!
                         )
                       )
+                    ),
+                    child: ButtonWidget(
+                      height: null,
+                      padding: EdgeInsets.all(10.0),
+                      borderRadius: BorderRadius.zero,
+                      shadow: false,
+                      effect: TapEffect.none,
+                      backgroundColor: Colors.transparent,
+                      onPressed: () {
+                        gameProvider.currentPuzzle!.reset(effect: true);
+                        _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
+                      },
+                      child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                     )
                   ),
                   Expanded(child: SizedBox()),
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 200),
-                    switchInCurve: Curves.decelerate,
-                    switchOutCurve: Curves.decelerate,
-                    child: Visibility(
-                      key: ValueKey(MediaQuery.of(context).size.width >= 1024),
-                      visible: MediaQuery.of(context).size.width >= 1024,
-                      child: ButtonWidget(
-                        height: null,
-                        padding: EdgeInsets.all(10.0),
-                        borderRadius: BorderRadius.zero,
-                        shadow: false,
-                        backgroundColor: Colors.transparent,
-                        onPressed: () {},
-                        child: SvgPicture.asset("assets/icons/group.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
-                      )
-                    )
-                  ),
-                  SizedBox(width: 40.0),
                   ButtonWidget(
                     height: null,
                     padding: EdgeInsets.all(10.0),
@@ -246,6 +242,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                     onPressed: () => Navigator.push(context, DialogWidget(AchievementsView(), padding: EdgeInsets.zero)),
                     child: SvgPicture.asset("assets/icons/trophy.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                   ),
+                  SizedBox(width: 20.0),
                   AnimatedBuilder(
                     animation: _settingsAnimationController,
                     builder: (_, Widget? child) => RotationTransition(

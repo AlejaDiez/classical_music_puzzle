@@ -148,22 +148,18 @@ class _MusicSheetWidgetState extends State<MusicSheetWidget> with TickerProvider
                                       children: [
                                         SvgPicture.asset("assets/icons/finger.svg", color: Theme.of(context).hintColor.withOpacity(0.6), height: widget.size * 0.026 * 0.8,  width: widget.size * 0.026 * 0.8),
                                         SizedBox(width: widget.size * 0.026 / 3),
-                                        AnimatedSize(
+                                        AnimatedSwitcher(
                                           duration: const Duration(milliseconds: 200),
-                                          curve: Curves.decelerate,
-                                          child: AnimatedSwitcher(
-                                            duration: const Duration(milliseconds: 200),
-                                            switchInCurve: Curves.decelerate,
-                                            switchOutCurve: Curves.decelerate,
-                                            transitionBuilder: (Widget child, Animation<double> animation) => FadeTransition(
-                                              opacity: animation,
-                                              child: ScaleTransition(
-                                                scale: animation,
-                                                child: child
-                                              )
-                                            ),
-                                            child: Text(_puzzleProvider.movements.toString(), style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: widget.size * 0.026), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false), key: ValueKey(_puzzleProvider.movements))
-                                          )
+                                          switchInCurve: Curves.decelerate,
+                                          switchOutCurve: Curves.decelerate,
+                                          transitionBuilder: (Widget child, Animation<double> animation) => FadeTransition(
+                                            opacity: animation,
+                                            child: ScaleTransition(
+                                              scale: animation,
+                                              child: child
+                                            )
+                                          ),
+                                          child: Text(_puzzleProvider.movements.toString(), style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: widget.size * 0.026), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false), key: ValueKey(_puzzleProvider.movements))
                                         )
                                       ]
                                     )
@@ -182,12 +178,7 @@ class _MusicSheetWidgetState extends State<MusicSheetWidget> with TickerProvider
                                           child: SvgPicture.asset("assets/icons/clock.svg", color: Theme.of(context).hintColor.withOpacity(0.6), height: widget.size * 0.026 * 0.8,  width: widget.size * 0.026 * 0.8)
                                         ),
                                         SizedBox(width: widget.size * 0.026 / 3),
-                                        AnimatedSize(
-                                          duration: const Duration(milliseconds: 200),
-                                          curve: Curves.decelerate,
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(timeParse(_puzzleProvider.seconds), style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: widget.size * 0.026), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
-                                        )
+                                        Text(timeParse(_puzzleProvider.seconds), style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: widget.size * 0.026), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
                                       ]
                                     )
                                   )
