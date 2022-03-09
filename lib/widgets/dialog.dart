@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum DialogType {popUp, slide}
-
 class DialogWidget extends PageRouteBuilder {
   final Widget child;
   final bool canDismiss;
@@ -19,7 +17,7 @@ class DialogWidget extends PageRouteBuilder {
       child: FittedBox(
         fit: BoxFit.contain,
         child: Container(
-          width: 450.0,
+          width: 420.0,
           margin: const EdgeInsets.all(20.0),
           padding: padding,
           clipBehavior: Clip.antiAlias,

@@ -5,5 +5,8 @@
     "settings": "Configuración",
     "easyMode": "Modo fácil",
     "hardMode": "Modo difícil",
-    "licenses": "Licencias"
+    "licenses": "Licencias",
+    "exitWarning": "¿Estás seguro de que quieres salir?",
+    "yes": "Si",
+    "no": "No"
 }

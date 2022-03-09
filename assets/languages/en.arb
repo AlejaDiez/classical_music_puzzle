@@ -5,5 +5,8 @@
     "settings": "Settings",
     "easyMode": "Easy mode",
     "hardMode": "Hard mode",
-    "licenses": "Licenses"
+    "licenses": "Licenses",
+    "exitWarning": "Are you sure you want to quit?",
+    "yes": "Yes",
+    "no": "No"
 }

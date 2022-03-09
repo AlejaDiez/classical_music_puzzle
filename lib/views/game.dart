@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:classical_music_puzzle/views/exit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,7 @@ import '../models/music_sheet.dart';
 import '../providers/game.dart';
 import '../providers/puzzle.dart';
 import '../views/settings.dart';
-import 'achievements.dart';
+import '../views/achievements.dart';
 import '../widgets/button.dart';
 import '../widgets/dialog.dart';
 import '../widgets/music_sheet.dart';
@@ -77,196 +78,207 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
         _resetOpacityAnimationController.forward();
       }
     };
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: Theme.of(context).primaryColor,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedBuilder(
-            animation: _initialAnimationController,
-            builder: (_, Widget? child) => Transform(
-              transform: Matrix4.translationValues(_initialTranslationAnimation.value * MediaQuery.of(context).size.width, 0.0, 0.0)..scale(_initialScaleAnimation.value)..rotateZ(_initialAngleAnimation.value),
-              alignment: Alignment.bottomCenter,
-              child: child
-            ),
-            child: LayoutBuilder(
-              builder: (_, BoxConstraints constraints) {
-                late double _size;
-                if(constraints.maxWidth <= 768.0) {
-                  if(constraints.maxHeight * 0.84 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
-                  else _size = constraints.maxHeight * 0.84;
-                } else {
-                  if(constraints.maxWidth * 0.84 >= 3 * (constraints.maxHeight * 0.84) / 4) _size = constraints.maxHeight * 0.84;
-                  else _size = constraints.maxWidth * 0.84;
+    return WillPopScope(
+      onWillPop: () async {
+        if(gameProvider.currentPuzzle != null) {
+          gameProvider.changeCurrentPuzzle(null);
+          return false;
+        } else {
+          return await Navigator.push(context, DialogWidget(ExitView(), canDismiss: false));
+        }
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Theme.of(context).primaryColor,
+        padding: MediaQuery.of(context).padding,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AnimatedBuilder(
+              animation: _initialAnimationController,
+              builder: (_, Widget? child) => Transform(
+                transform: Matrix4.translationValues(_initialTranslationAnimation.value * MediaQuery.of(context).size.width, 0.0, 0.0)..scale(_initialScaleAnimation.value)..rotateZ(_initialAngleAnimation.value),
+                alignment: Alignment.bottomCenter,
+                child: child
+              ),
+              child: LayoutBuilder(
+                builder: (_, BoxConstraints constraints) {
+                  late double _size;
+                  if(constraints.maxWidth <= 768.0) {
+                    if(constraints.maxHeight * 0.84 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
+                    else _size = constraints.maxHeight * 0.84;
+                  } else {
+                    if(constraints.maxWidth * 0.84 >= 3 * (constraints.maxHeight * 0.84) / 4) _size = constraints.maxHeight * 0.84;
+                    else _size = constraints.maxWidth * 0.84;
+                  }
+                  return PageView(
+                    controller: _pageController,
+                    physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
+                    clipBehavior: Clip.none,
+                    children: [
+                      Transform(
+                        transform: Matrix4.identity()..scale(lerpDouble(1.0, 0.6, _page.clamp(0.0, 1.0)))..rotateZ(lerpDouble(0.0, -0.16, _page.clamp(0.0, 1.0))!),
+                        alignment: Alignment.bottomCenter,
+                        child: MusicSheetWidget(
+                          MusicSheet(
+                            title: "Symphony No. 40",
+                            author: "W. Amadeus Mozart",
+                            items: 8,
+                            imagePath: "assets/images/symphony_no_40_",
+                            imageExtension: ".svg",
+                            audioPath: "assets/sounds/symphony_no_40_",
+                            audioExtension: ".mp3"
+                          ),
+                          size: _size,
+                          backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
+                        )
+                      ),
+                      Transform(
+                        transform: Matrix4.identity()..scale(lerpDouble(0.6, 1.0, _page.clamp(0.0, 1.0))!)..rotateZ(lerpDouble(0.16, 0.0, _page.clamp(0.0, 1.0))!),
+                        alignment: Alignment.bottomCenter,
+                        child: MusicSheetWidget(
+                          MusicSheet(
+                            title: "Symphony No. 5",
+                            author: "L. van Beethoven",
+                            items: 15,
+                            imagePath: "assets/images/symphony_no_5_",
+                            imageExtension: ".svg",
+                            audioPath: "assets/sounds/symphony_no_5_",
+                            audioExtension: ".mp3"
+                          ),
+                          size: _size,
+                          backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
+                        )
+                      )
+                    ]
+                  );
                 }
-                return PageView(
-                  controller: _pageController,
-                  physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
-                  clipBehavior: Clip.none,
+              )
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: AnimatedBuilder(
+                animation: _navigationBarAniamtionController,
+                builder: (_, Widget? child) => FadeTransition(
+                  opacity: _navigationBarOpacityAniamtion,
+                  child: SlideTransition(
+                    position: _navigationBarOffsetAniamtion,
+                    child: child
+                  )
+                ),
+                child: Container(
+                  height: 14.0,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.only(
+                    right: ((1 - _page) * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0,
+                    bottom: 10.0,
+                    left: (_page * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).hintColor,
+                      borderRadius: BorderRadius.circular(100.0)
+                    )
+                  )
+                )
+              )
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Transform(
-                      transform: Matrix4.identity()..scale(lerpDouble(1.0, 0.6, _page.clamp(0.0, 1.0)))..rotateZ(lerpDouble(0.0, -0.16, _page.clamp(0.0, 1.0))!),
-                      alignment: Alignment.bottomCenter,
-                      child: MusicSheetWidget(
-                        MusicSheet(
-                          title: "Symphony No. 40",
-                          author: "W. Amadeus Mozart",
-                          items: 8,
-                          imagePath: "assets/images/symphony_no_40_",
-                          imageExtension: ".svg",
-                          audioPath: "assets/sounds/symphony_no_40_",
-                          audioExtension: ".mp3"
-                        ),
-                        size: _size,
-                        backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
+                    AnimatedBuilder(
+                      animation: Listenable.merge([_backOpacityAnimationController, _backSlideAnimationController]),
+                      builder: (_, Widget? child) => Visibility(
+                        visible: _backOpacityAnimationController.value != 0.0,
+                        child: FadeTransition(
+                          opacity: _backOpacityAnimation,
+                          child: SlideTransition(
+                            position: _backOffsetAnimation,
+                            child: child!
+                          )
+                        )
+                      ),
+                      child: ButtonWidget(
+                        height: null,
+                        padding: EdgeInsets.all(10.0),
+                        borderRadius: BorderRadius.zero,
+                        shadow: false,
+                        effect: TapEffect.none,
+                        backgroundColor: Colors.transparent,
+                        onPressed: () => gameProvider.changeCurrentPuzzle(null),
+                        child: SvgPicture.asset("assets/icons/back.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                       )
                     ),
-                    Transform(
-                      transform: Matrix4.identity()..scale(lerpDouble(0.6, 1.0, _page.clamp(0.0, 1.0))!)..rotateZ(lerpDouble(0.16, 0.0, _page.clamp(0.0, 1.0))!),
-                      alignment: Alignment.bottomCenter,
-                      child: MusicSheetWidget(
-                        MusicSheet(
-                          title: "Symphony No. 5",
-                          author: "L. van Beethoven",
-                          items: 15,
-                          imagePath: "assets/images/symphony_no_5_",
-                          imageExtension: ".svg",
-                          audioPath: "assets/sounds/symphony_no_5_",
-                          audioExtension: ".mp3"
-                        ),
-                        size: _size,
-                        backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
+                    SizedBox(width: 20.0),
+                    AnimatedBuilder(
+                      animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
+                      builder: (_, Widget? child) => Visibility(
+                        visible: (_resetOpacityAnimationController.value != 0.0) && (!gameProvider.shake || MediaQuery.of(context).size.width >= 1024.0),
+                        child: FadeTransition(
+                          opacity: _resetOpacityAnimation,
+                          child: RotationTransition(
+                            turns: _resetRotateAnimation,
+                            child: child!
+                          )
+                        )
+                      ),
+                      child: ButtonWidget(
+                        height: null,
+                        padding: EdgeInsets.all(10.0),
+                        borderRadius: BorderRadius.zero,
+                        shadow: false,
+                        effect: TapEffect.none,
+                        backgroundColor: Colors.transparent,
+                        onPressed: () {
+                          gameProvider.currentPuzzle!.reset(effect: true);
+                          _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
+                        },
+                        child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
+                      )
+                    ),
+                    Expanded(child: SizedBox()),
+                    ButtonWidget(
+                      height: null,
+                      padding: EdgeInsets.all(10.0),
+                      borderRadius: BorderRadius.zero,
+                      shadow: false,
+                      backgroundColor: Colors.transparent,
+                      onPressed: () => Navigator.push(context, DialogWidget(AchievementsView(), padding: EdgeInsets.zero)),
+                      child: SvgPicture.asset("assets/icons/trophy.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
+                    ),
+                    SizedBox(width: 20.0),
+                    AnimatedBuilder(
+                      animation: _settingsAnimationController,
+                      builder: (_, Widget? child) => RotationTransition(
+                        turns: _settingsAnimation,
+                        child: child!
+                      ),
+                      child: ButtonWidget(
+                        height: null,
+                        padding: EdgeInsets.all(10.0),
+                        borderRadius: BorderRadius.zero,
+                        shadow: false,
+                        backgroundColor: Colors.transparent,
+                        onPressed: () {
+                          _settingsAnimationController.forward();
+                          Navigator.push(context, DialogWidget(SettingsView())).whenComplete(() => _settingsAnimationController.reverse());
+                        },
+                        child: SvgPicture.asset("assets/icons/settings.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
                       )
                     )
                   ]
-                );
-              }
-            )
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: AnimatedBuilder(
-              animation: _navigationBarAniamtionController,
-              builder: (_, Widget? child) => FadeTransition(
-                opacity: _navigationBarOpacityAniamtion,
-                child: SlideTransition(
-                  position: _navigationBarOffsetAniamtion,
-                  child: child
-                )
-              ),
-              child: Container(
-                height: 14.0,
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.only(
-                  right: ((1 - _page) * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0,
-                  bottom: 10.0,
-                  left: (_page * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0
-                ),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).hintColor,
-                    borderRadius: BorderRadius.circular(100.0)
-                  )
                 )
               )
             )
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_backOpacityAnimationController, _backSlideAnimationController]),
-                    builder: (_, Widget? child) => Visibility(
-                      visible: _backOpacityAnimationController.value != 0.0,
-                      child: FadeTransition(
-                        opacity: _backOpacityAnimation,
-                        child: SlideTransition(
-                          position: _backOffsetAnimation,
-                          child: child!
-                        )
-                      )
-                    ),
-                    child: ButtonWidget(
-                      height: null,
-                      padding: EdgeInsets.all(10.0),
-                      borderRadius: BorderRadius.zero,
-                      shadow: false,
-                      effect: TapEffect.none,
-                      backgroundColor: Colors.transparent,
-                      onPressed: () => gameProvider.changeCurrentPuzzle(null),
-                      child: SvgPicture.asset("assets/icons/back.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
-                    )
-                  ),
-                  SizedBox(width: 20.0),
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
-                    builder: (_, Widget? child) => Visibility(
-                      visible: (_resetOpacityAnimationController.value != 0.0) && (!gameProvider.shake || MediaQuery.of(context).size.width >= 1024.0),
-                      child: FadeTransition(
-                        opacity: _resetOpacityAnimation,
-                        child: RotationTransition(
-                          turns: _resetRotateAnimation,
-                          child: child!
-                        )
-                      )
-                    ),
-                    child: ButtonWidget(
-                      height: null,
-                      padding: EdgeInsets.all(10.0),
-                      borderRadius: BorderRadius.zero,
-                      shadow: false,
-                      effect: TapEffect.none,
-                      backgroundColor: Colors.transparent,
-                      onPressed: () {
-                        gameProvider.currentPuzzle!.reset(effect: true);
-                        _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
-                      },
-                      child: SvgPicture.asset("assets/icons/reset.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
-                    )
-                  ),
-                  Expanded(child: SizedBox()),
-                  ButtonWidget(
-                    height: null,
-                    padding: EdgeInsets.all(10.0),
-                    borderRadius: BorderRadius.zero,
-                    shadow: false,
-                    backgroundColor: Colors.transparent,
-                    onPressed: () => Navigator.push(context, DialogWidget(AchievementsView(), padding: EdgeInsets.zero)),
-                    child: SvgPicture.asset("assets/icons/trophy.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
-                  ),
-                  SizedBox(width: 20.0),
-                  AnimatedBuilder(
-                    animation: _settingsAnimationController,
-                    builder: (_, Widget? child) => RotationTransition(
-                      turns: _settingsAnimation,
-                      child: child!
-                    ),
-                    child: ButtonWidget(
-                      height: null,
-                      padding: EdgeInsets.all(10.0),
-                      borderRadius: BorderRadius.zero,
-                      shadow: false,
-                      backgroundColor: Colors.transparent,
-                      onPressed: () {
-                        _settingsAnimationController.forward();
-                        Navigator.push(context, DialogWidget(SettingsView())).whenComplete(() => _settingsAnimationController.reverse());
-                      },
-                      child: SvgPicture.asset("assets/icons/settings.svg", color: Theme.of(context).hintColor, height: 25.0, width: 25.0)
-                    )
-                  )
-                ]
-              )
-            )
-          )
-        ]
+          ]
+        )
       )
     );
   }
