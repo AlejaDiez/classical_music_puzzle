@@ -63,103 +63,107 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Transform.translate(
-                offset: Offset(0.0, Theme.of(context).textTheme.headlineLarge!.fontSize! / 2),
-                child: ConfettiWidget(
-                  confettiController: _confettiController,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  numberOfParticles: 400,
-                  emissionFrequency: 0,
-                  particleDrag: 0.02,
-                  shouldLoop: false,
-                  colors: [Colors.red, Colors.blue, Colors.green, Colors.yellow]
-                )
-              ),
-              AnimatedBuilder(
-                animation: _animationController,
-                builder: (_, Widget? child) => ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: child!
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Transform.translate(
+            offset: Offset(0.0, Theme.of(context).textTheme.headlineLarge!.fontSize! / 2),
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 400,
+              emissionFrequency: 0,
+              particleDrag: 0.02,
+              colors: [Colors.red, Colors.blue, Colors.green, Colors.yellow]
+            )
+          ),
+          FittedBox(
+            fit: BoxFit.contain,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (_, Widget? child) => ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: child!
+                  ),
+                  child: Text(widget.title, style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontSize: 60.0, color: Color.fromRGBO(255, 255, 255, 1.0)))
                 ),
-                child: Text(widget.title, style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontSize: 60.0, color: Color.fromRGBO(255, 255, 255, 1.0)))
-              ),
-              SizedBox(height: 20.0 * 2),
-              AnimatedBuilder(
-                animation: _animationController,
-                builder: (_, Widget? child) => SlideTransition(
-                  position: _positionAnimation,
-                  child: child!
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset("assets/icons/finger.svg", color: Color.fromRGBO(255, 255, 255, 1.0), height: 20.0 * 0.8,  width: 20.0 * 0.8),
-                        SizedBox(width: 20.0 / 3),
-                        Text(widget.movements.toString(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20.0, color: Color.fromRGBO(255, 255, 255, 1.0)), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
-                      ]
-                    ),
-                    SizedBox(width: 20.0 * 2),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Transform.rotate(
-                          angle: (widget.seconds / 60) * 2 * pi,
-                          child: SvgPicture.asset("assets/icons/clock.svg", color: Color.fromRGBO(255, 255, 255, 1.0), height: 20.0 * 0.8,  width: 20.0 * 0.8)
-                        ),
-                        SizedBox(width: 20.0 / 3),
-                        Text(timeParse(widget.seconds), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20.0, color: Color.fromRGBO(255, 255, 255, 1.0)), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
-                      ]
-                    )
-                  ]
-                )
-              ),
-              SizedBox(height: 20.0 * 5),
-              AnimatedBuilder(
-                animation: Listenable.merge([_animationController, _closeAnimationController]),
-                builder: (_, Widget? child) {
-                  final Animation<double> _scale = (_animationController.value != 1.0)
-                    ?_scaleAnimation
-                    :Tween<double>(begin: 1.0, end: (MediaQuery.of(context).size.longestSide) / ((_buttonKey.currentContext!.findRenderObject() as RenderBox).size.height / 2)).animate(_scaleCloseAnimation); 
-                  return ScaleTransition(
-                    scale: _scale,
-                    child: ButtonWidget(
-                      key: _buttonKey,
-                      height: null,
-                      boxShape: BoxShape.circle,
-                      effect: TapEffect.none,
-                      padding: EdgeInsets.all(30.0),
-                      onPressed: () => _closeAnimationController.forward(),
-                      child: FadeTransition(
-                        opacity: _opacityCloseAnimation,
-                        child: child!
+                SizedBox(height: 20.0 * 2),
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (_, Widget? child) => SlideTransition(
+                    position: _positionAnimation,
+                    child: child!
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset("assets/icons/finger.svg", color: Color.fromRGBO(255, 255, 255, 1.0), height: 20.0 * 0.8,  width: 20.0 * 0.8),
+                          SizedBox(width: 20.0 / 3),
+                          Text(widget.movements.toString(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20.0, color: Color.fromRGBO(255, 255, 255, 1.0)), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
+                        ]
+                      ),
+                      SizedBox(width: 20.0 * 2),
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Transform.rotate(
+                            angle: (widget.seconds / 60) * 2 * pi,
+                            child: SvgPicture.asset("assets/icons/clock.svg", color: Color.fromRGBO(255, 255, 255, 1.0), height: 20.0 * 0.8,  width: 20.0 * 0.8)
+                          ),
+                          SizedBox(width: 20.0 / 3),
+                          Text(timeParse(widget.seconds), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20.0, color: Color.fromRGBO(255, 255, 255, 1.0)), textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
+                        ]
                       )
-                    )
-                  );
-                },
-                child: SvgPicture.asset("assets/icons/reset.svg", height: 30.0, width: 30.0, color: Theme.of(context).hintColor)
-              )
-            ]
+                    ]
+                  )
+                )
+              ]
+            )
+          ),
+          SizedBox(height: 20.0 * 5),
+          AnimatedBuilder(
+            animation: Listenable.merge([_animationController, _closeAnimationController]),
+            builder: (_, Widget? child) {
+              final Animation<double> _scale = (_animationController.value != 1.0)
+                ?_scaleAnimation
+                :Tween<double>(begin: 1.0, end: (MediaQuery.of(context).size.longestSide) / ((_buttonKey.currentContext!.findRenderObject() as RenderBox).size.height / 2)).animate(_scaleCloseAnimation); 
+              return ScaleTransition(
+                scale: _scale,
+                child: ButtonWidget(
+                  key: _buttonKey,
+                  height: null,
+                  boxShape: BoxShape.circle,
+                  effect: TapEffect.none,
+                  padding: EdgeInsets.all(30.0),
+                  onPressed: () => _closeAnimationController.forward(),
+                  child: FadeTransition(
+                    opacity: _opacityCloseAnimation,
+                    child: child!
+                  )
+                )
+              );
+            },
+            child: SvgPicture.asset("assets/icons/reset.svg", height: 30.0, width: 30.0, color: Theme.of(context).hintColor)
           )
-        )
+        ]
       )
     );
   }

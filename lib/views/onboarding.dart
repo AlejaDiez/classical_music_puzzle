@@ -108,41 +108,44 @@ class _OnboardingViewState extends State<OnboardingView> with TickerProviderStat
                           )
                         ),
                         SizedBox(height: 80.0, width: 80.0),
-                        AnimatedBuilder(
-                          animation: _initialAnimationController, 
-                          builder: (_, Widget? child) => FadeTransition(
-                            opacity: (constraints.maxWidth <= 768.0) ?_initialOpacityDelayAnimation :_initialOpacityAnimation,
-                            child: ScaleTransition(
-                              scale: _initialScaleAnimation,
-                              alignment: (constraints.maxWidth <= 768.0) ?Alignment.center :Alignment.centerLeft,
-                              child: (constraints.maxWidth <= 768.0)
-                                ?SlideTransition(
-                                  position: _initialPositionAnimation,
-                                  child: child!
-                                )
-                                :child!
-                            )
-                          ),
-                          child: Opacity(
-                            opacity: lerpDouble(1.0, 0.0, _page.clamp(0.0, 1.0))!,
-                            child: Transform.scale(
-                              scale: lerpDouble(1.0, 0.0, _page.clamp(0.0, 1.0))!,
-                              alignment: (constraints.maxWidth <= 768.0) ?Alignment.center :Alignment.centerLeft,
-                              child: Transform.translate(
-                                offset: (constraints.maxWidth <= 768.0) ?Offset(0.0, lerpDouble(0, MediaQuery.of(context).size.height * 0.05, _page.clamp(0.0, 1.0))!) :Offset(0.0, 0.0),
-                                child: RichText(
-                                  textAlign: (constraints.maxWidth <= 768.0) ?TextAlign.center :TextAlign.start,
-                                  text: TextSpan(
-                                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(height: 1.16),
-                                    children: [
-                                      TextSpan(text: "Classical Music"),
-                                      TextSpan(
-                                        text: "\nPuzzle",
-                                        style: TextStyle(foreground: Paint()..style = PaintingStyle.stroke ..strokeWidth = 2 ..color = Theme.of(context).hintColor)
-                                      )
-                                    ]
+                        FittedBox(
+                          fit: BoxFit.contain,
+                          child: AnimatedBuilder(
+                            animation: _initialAnimationController, 
+                            builder: (_, Widget? child) => FadeTransition(
+                              opacity: (constraints.maxWidth <= 768.0) ?_initialOpacityDelayAnimation :_initialOpacityAnimation,
+                              child: ScaleTransition(
+                                scale: _initialScaleAnimation,
+                                alignment: (constraints.maxWidth <= 768.0) ?Alignment.center :Alignment.centerLeft,
+                                child: (constraints.maxWidth <= 768.0)
+                                  ?SlideTransition(
+                                    position: _initialPositionAnimation,
+                                    child: child!
                                   )
-                                ),
+                                  :child!
+                              )
+                            ),
+                            child: Opacity(
+                              opacity: lerpDouble(1.0, 0.0, _page.clamp(0.0, 1.0))!,
+                              child: Transform.scale(
+                                scale: lerpDouble(1.0, 0.0, _page.clamp(0.0, 1.0))!,
+                                alignment: (constraints.maxWidth <= 768.0) ?Alignment.center :Alignment.centerLeft,
+                                child: Transform.translate(
+                                  offset: (constraints.maxWidth <= 768.0) ?Offset(0.0, lerpDouble(0, MediaQuery.of(context).size.height * 0.05, _page.clamp(0.0, 1.0))!) :Offset(0.0, 0.0),
+                                  child: RichText(
+                                    textAlign: (constraints.maxWidth <= 768.0) ?TextAlign.center :TextAlign.start,
+                                    text: TextSpan(
+                                      style: Theme.of(context).textTheme.headlineLarge!.copyWith(height: 1.16),
+                                      children: [
+                                        TextSpan(text: "Classical Music"),
+                                        TextSpan(
+                                          text: "\nPuzzle",
+                                          style: TextStyle(foreground: Paint()..style = PaintingStyle.stroke ..strokeWidth = 2 ..color = Theme.of(context).hintColor)
+                                        )
+                                      ]
+                                    )
+                                  )
+                                )
                               )
                             )
                           )

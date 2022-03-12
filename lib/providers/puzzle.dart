@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shake/shake.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
@@ -24,6 +25,39 @@ class PuzzleProvider extends ChangeNotifier {
     _puzzleStateChange = puzzleStateChange;
     _shakeDetector = ShakeDetector.autoStart(onPhoneShake: () {
       if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
+    });
+    _rawKeyboard = RawKeyboard.instance..addListener((RawKeyEvent rawKeyEvent) {
+      if(_puzzleState == PuzzleState.play) {
+        if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
+          for(SlideObject slideObject in _slideObjects) {
+            if(slideObject.currentPoint.x == _emptyPoint.x && slideObject.currentPoint.y - 1 == _emptyPoint.y) {
+              changeSlideObjectPoint(slideObject.index);
+              break;
+            } else continue;
+          }
+        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+          for(SlideObject slideObject in _slideObjects) {
+            if(slideObject.currentPoint.y == _emptyPoint.y && slideObject.currentPoint.x + 1 == _emptyPoint.x) {
+              changeSlideObjectPoint(slideObject.index);
+              break;
+            } else continue;
+          }
+        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+          for(SlideObject slideObject in _slideObjects) {
+            if(slideObject.currentPoint.x == _emptyPoint.x && slideObject.currentPoint.y + 1 == _emptyPoint.y) {
+              changeSlideObjectPoint(slideObject.index);
+              break;
+            } else continue;
+          }
+        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+          for(SlideObject slideObject in _slideObjects) {
+            if(slideObject.currentPoint.y == _emptyPoint.y && slideObject.currentPoint.x - 1 == _emptyPoint.x) {
+              changeSlideObjectPoint(slideObject.index);
+              break;
+            } else continue;
+          }
+        }
+      }
     });
     _generateNewSolvableRandomPuzzle(false);
   }
@@ -49,6 +83,7 @@ class PuzzleProvider extends ChangeNotifier {
   PuzzleState _puzzleState = PuzzleState.stop;
   late final Function(PuzzleState) _puzzleStateChange;
   late final ShakeDetector _shakeDetector;
+  late final RawKeyboard _rawKeyboard;
   int _movements = 0;
   int? _slideObjectMoving;
   late final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer()..setVolume(1.0)..isPlaying.listen((bool isPlaying) {
@@ -247,6 +282,7 @@ class PuzzleProvider extends ChangeNotifier {
   void dispose() {
     _timer?.cancel();
     _shakeDetector.stopListening();
+    _rawKeyboard.removeListener((RawKeyEvent rawKeyEvent) {});
     _audioPlayer.dispose();
     Future.microtask(() => super.dispose());
   }

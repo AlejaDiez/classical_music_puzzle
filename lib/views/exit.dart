@@ -13,7 +13,7 @@ class ExitView extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
-          child: Text(AppLocalizations.of(context)!.exitWarning, style: Theme.of(context).textTheme.headlineMedium!, textAlign: TextAlign.center),
+          child: Text(AppLocalizations.of(context)!.exitWarning, style: Theme.of(context).textTheme.headlineMedium!.copyWith(height: null), textAlign: TextAlign.center),
         ),
         Row(
           mainAxisSize: MainAxisSize.max,

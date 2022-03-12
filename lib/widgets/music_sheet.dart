@@ -236,9 +236,9 @@ class _MusicSheetWidgetState extends State<MusicSheetWidget> with TickerProvider
                     Text(_puzzleProvider.musicSheet.title, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: widget.size * 0.07, color: Color.fromRGBO(255, 255, 255, 1.0))),
                     Divider(
                       height: widget.size * 0.1,
-                      thickness: widget.size * 0.0024,
-                      indent: widget.size * 0.3,
-                      endIndent: widget.size * 0.3,
+                      thickness: widget.size * 0.002,
+                      indent: widget.size * 0.34,
+                      endIndent: widget.size * 0.34,
                       color: Color.fromRGBO(255, 255, 255, 0.6),
                     ),
                     Text(_puzzleProvider.musicSheet.author, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: widget.size * 0.07 / 2, fontStyle: FontStyle.normal, color: Color.fromRGBO(255, 255, 255, 0.6)))
