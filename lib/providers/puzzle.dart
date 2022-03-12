@@ -221,7 +221,7 @@ class PuzzleProvider extends ChangeNotifier {
       _slideObjectPlaying = null;
       _timer?.cancel();
       _timer = null;
-      _gameProvider.addStatistics(musicSheet.title + "|" + _movements.toString() + "|" + _seconds.toString());
+      _gameProvider.addachievements(musicSheet.title + "|" + _movements.toString() + "|" + _seconds.toString());
       Navigator.of(_context).push(PageRouteBuilder(
         opaque: false,
         barrierColor: Color.fromRGBO(0, 0, 0, 0.8),

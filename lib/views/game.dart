@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:classical_music_puzzle/views/exit.dart';
@@ -21,16 +22,16 @@ class GameView extends StatefulWidget {
 
 class _GameViewState extends State<GameView> with TickerProviderStateMixin {
   late final PageController _pageController;
+  double _page = 0.0;
   late final AnimationController _navigationBarAniamtionController, _backOpacityAnimationController, _backSlideAnimationController, _resetOpacityAnimationController, _resetRotateAnimationController, _settingsAnimationController, _initialAnimationController;
   late final Animation<double> _navigationBarOpacityAniamtion, _backOpacityAnimation, _resetOpacityAnimation, _resetRotateAnimation, _settingsAnimation, _initialScaleAnimation, _initialAngleAnimation, _initialTranslationAnimation;
   late final Animation<Offset> _navigationBarOffsetAniamtion, _backOffsetAnimation;
-  double _page = 0.0;
 
   @override
   void initState() {
     _pageController = PageController(initialPage: 0)..addListener(() => setState(() => _page = _pageController.page ??0.0));
     _navigationBarAniamtionController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
-    _navigationBarOpacityAniamtion = Tween(begin: 1.0, end: 0.1).animate(CurvedAnimation(parent: _navigationBarAniamtionController, curve: Curves.decelerate));
+    _navigationBarOpacityAniamtion = Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(parent: _navigationBarAniamtionController, curve: Curves.decelerate));
     _navigationBarOffsetAniamtion = Tween(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.0)).animate(CurvedAnimation(parent: _navigationBarAniamtionController, curve: Curves.decelerate));
     _backOpacityAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     _backOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _backOpacityAnimationController, curve: Curves.decelerate));

@@ -27,7 +27,7 @@ class GameProvider extends ChangeNotifier {
   late bool _audio = sharedPreferences.getBool('audio') ??true;
   late bool _shake = sharedPreferences.getBool('shake') ??true;
   late bool _easyMode = sharedPreferences.getBool('easy mode') ??true;
-  late List<String> _statistics = sharedPreferences.getStringList('statistics') ??[];
+  late List<String> _achievements = sharedPreferences.getStringList('achievements') ??[];
   PuzzleProvider? _currentPuzzle;
   late Function(PuzzleProvider?) onCurrentPuzzleChange;
 
@@ -36,7 +36,7 @@ class GameProvider extends ChangeNotifier {
   bool get audio => _audio;
   bool get shake => _shake;
   bool get easyMode => _easyMode;
-  List<String> get statistics => _statistics;
+  List<String> get achievements => _achievements;
   PuzzleProvider? get currentPuzzle => _currentPuzzle;
 
   set locale(Locale value) {
@@ -66,10 +66,10 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
     sharedPreferences.setBool("easy mode", value);
   }
-  void addStatistics(String value) {
-    _statistics.add(value);
+  void addachievements(String value) {
+    _achievements.add(value);
     notifyListeners();
-    sharedPreferences.setStringList("statistics", _statistics);
+    sharedPreferences.setStringList("achievements", _achievements);
   }
   void changeCurrentPuzzle(PuzzleProvider? value) {
     if(value != null) {

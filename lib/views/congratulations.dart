@@ -82,7 +82,6 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                   emissionFrequency: 0,
                   particleDrag: 0.02,
                   shouldLoop: false,
-                  displayTarget: true,
                   colors: [Colors.red, Colors.blue, Colors.green, Colors.yellow]
                 )
               ),
@@ -92,7 +91,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                   scale: _scaleAnimation,
                   child: child!
                 ),
-                child: Text(widget.title, style: Theme.of(context).textTheme.headlineLarge)
+                child: Text(widget.title, style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontSize: 60.0, color: Color.fromRGBO(255, 255, 255, 1.0)))
               ),
               SizedBox(height: 20.0 * 2),
               AnimatedBuilder(
@@ -147,7 +146,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                       height: null,
                       boxShape: BoxShape.circle,
                       effect: TapEffect.none,
-                      padding: EdgeInsets.all(40.0),
+                      padding: EdgeInsets.all(30.0),
                       onPressed: () => _closeAnimationController.forward(),
                       child: FadeTransition(
                         opacity: _opacityCloseAnimation,
@@ -156,7 +155,7 @@ class _CongratulationsViewState extends State<CongratulationsView> with TickerPr
                     )
                   );
                 },
-                child: SvgPicture.asset("assets/icons/reset.svg", height: 40.0, width: 40.0, color: Theme.of(context).hintColor)
+                child: SvgPicture.asset("assets/icons/reset.svg", height: 30.0, width: 30.0, color: Theme.of(context).hintColor)
               )
             ]
           )

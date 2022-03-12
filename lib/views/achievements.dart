@@ -23,7 +23,7 @@ class AchievementsView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
             child: Text(AppLocalizations.of(context)!.achievements, style: Theme.of(context).textTheme.headlineMedium!),
           ),
-          (gameProvider.statistics.isEmpty)
+          (gameProvider.achievements.isEmpty)
             ?Padding(
               padding: const EdgeInsets.only(right: 20.0, bottom: 20.0, left: 20.0),
               child: Text(AppLocalizations.of(context)!.noData, style: Theme.of(context).textTheme.bodyMedium)
@@ -31,7 +31,7 @@ class AchievementsView extends StatelessWidget {
             :Flexible(
               child: ListView.separated(
                 physics: BouncingScrollPhysics(),
-                itemCount: gameProvider.statistics.length,
+                itemCount: gameProvider.achievements.length,
                 shrinkWrap: true,
                 padding: EdgeInsets.only(
                   right: 20.0,
@@ -43,18 +43,18 @@ class AchievementsView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(child: Text(gameProvider.statistics[index].split('|')[0], style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.fade, softWrap: false)),
+                    Expanded(child: Text(gameProvider.achievements[index].split('|')[0], style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.fade, softWrap: false)),
                     SizedBox(width: Theme.of(context).textTheme.bodyMedium!.fontSize!),
                     SvgPicture.asset("assets/icons/finger.svg", color: Theme.of(context).hintColor.withOpacity(0.6), height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 0.8,  width: Theme.of(context).textTheme.bodyMedium!.fontSize! * 0.8),
                     SizedBox(width: Theme.of(context).textTheme.bodyMedium!.fontSize! / 3),
-                    Text(gameProvider.statistics[index].split('|')[1], style: Theme.of(context).textTheme.bodyMedium, textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false)),
+                    Text(gameProvider.achievements[index].split('|')[1], style: Theme.of(context).textTheme.bodyMedium, textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false)),
                     SizedBox(width: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2),
                     Transform.rotate(
-                      angle: (int.parse(gameProvider.statistics[index].split('|')[2]) / 60) * 2 * pi,
+                      angle: (int.parse(gameProvider.achievements[index].split('|')[2]) / 60) * 2 * pi,
                       child: SvgPicture.asset("assets/icons/clock.svg", color: Theme.of(context).hintColor.withOpacity(0.6), height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 0.8,  width: Theme.of(context).textTheme.bodyMedium!.fontSize! * 0.8)
                     ),
                     SizedBox(width: Theme.of(context).textTheme.bodyMedium!.fontSize! / 3),
-                    Text(timeParse(int.parse(gameProvider.statistics[index].split('|')[2])), style: Theme.of(context).textTheme.bodyMedium, textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
+                    Text(timeParse(int.parse(gameProvider.achievements[index].split('|')[2])), style: Theme.of(context).textTheme.bodyMedium, textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false))
                   ]
                 ),
                 separatorBuilder: (_, __) => Divider(
