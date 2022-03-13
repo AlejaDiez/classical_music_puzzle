@@ -36,7 +36,7 @@ android {
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode 1
-        versionName "0.1 beta"
+        versionName "1.0"
         multiDexEnabled true
     }
 

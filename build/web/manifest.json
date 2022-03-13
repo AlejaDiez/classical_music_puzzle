@@ -1,0 +1,22 @@
+{
+    "name": "Classical Music Puzzle",
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#FFFBF2",
+    "color_scheme_overrides": {"theme_color": "#120E0E"},
+    "description": "A new form to enjoy classical music.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "@@locale": "en",
+    "howToPlay": "How to play?",
+    "singleTap": "Single Tap",
+    "singleTapText": "With a single tap or using the keyboard arrows, you can move one or multiple objects.",
+    "drag": "Drag",
+    "dragText": "When you drag an object you can move it vertically or horizontally.",
+    "longPress": "Long Press",
+    "longPressText": "When you make a long press in any object, you can listen to part of the music sheet and see an amazing animation.",
+    "shake": "Shake",
+    "shakeText": "You can shake your mobile phone or press r key to reset the puzzle.",
+    "play": "Play",
+    "achievements": "Achievements",
+    "noData": "No games have been played yet.",
+    "settings": "Settings",
+    "easyMode": "Easy mode",
+    "hardMode": "Hard mode",
+    "licenses": "Licenses",
+    "exitWarning": "Are you sure you want to quit?",
+    "yes": "Yes",
+    "no": "No"
+}
