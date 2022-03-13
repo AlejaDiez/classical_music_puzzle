@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import '../models/music_sheet.dart';
 import '../providers/game.dart';
@@ -107,7 +109,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
             else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowLeft)) _pageController.previousPage(duration: const Duration(milliseconds: 800), curve: Curves.decelerate);
           } else {
             if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.escape)) gameProvider.changeCurrentPuzzle(null);
-            else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.keyR)) {
+            else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.keyR) && gameProvider.currentPuzzle!.puzzleState == PuzzleState.play) {
               gameProvider.currentPuzzle!.reset(effect: true);
               _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
             }
@@ -117,94 +119,110 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           color: Theme.of(context).primaryColor,
-          padding: MediaQuery.of(context).padding,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              AnimatedBuilder(
-                animation: _initialAnimationController,
-                builder: (_, Widget? child) => Transform(
-                  transform: Matrix4.translationValues(_initialTranslationAnimation.value * MediaQuery.of(context).size.width, 0.0, 0.0)..scale(_initialScaleAnimation.value)..rotateZ(_initialAngleAnimation.value),
-                  alignment: Alignment.bottomCenter,
-                  child: child
-                ),
-                child: LayoutBuilder(
-                  builder: (_, BoxConstraints constraints) {
-                    late double _size;
-                    if(constraints.maxWidth <= 768.0) {
-                      if(constraints.maxHeight * 0.84 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
-                      else _size = constraints.maxHeight * 0.84;
-                    } else {
-                      if(constraints.maxWidth * 0.84 >= 3 * (constraints.maxHeight * 0.84) / 4) _size = constraints.maxHeight * 0.84;
-                      else _size = constraints.maxWidth * 0.84;
+              StreamBuilder(
+                stream: accelerometerEvents,
+                builder: (_, AsyncSnapshot<AccelerometerEvent> event) =>  AnimatedPositioned(
+                  duration: Duration(milliseconds: 200),
+                  top: -((event.hasData) ?event.data!.y :0.0) * 4,
+                  right: -((event.hasData) ?event.data!.x :0.0) * 4,
+                  bottom: ((event.hasData) ?event.data!.y :0.0) * 4,
+                  left: ((event.hasData) ?event.data!.x :0.0) * 4,
+                  child: SvgPicture.asset("assets/icons/background.svg", color: Theme.of(context).hintColor.withOpacity(0.1), clipBehavior: Clip.none, fit: BoxFit.cover)
+                )
+              ),
+              Padding(
+                padding: MediaQuery.of(context).padding,
+                child: AnimatedBuilder(
+                  animation: _initialAnimationController,
+                  builder: (_, Widget? child) => Transform(
+                    transform: Matrix4.translationValues(_initialTranslationAnimation.value * MediaQuery.of(context).size.width, 0.0, 0.0)..scale(_initialScaleAnimation.value)..rotateZ(_initialAngleAnimation.value),
+                    alignment: Alignment.bottomCenter,
+                    child: child
+                  ),
+                  child: LayoutBuilder(
+                    builder: (_, BoxConstraints constraints) {
+                      late double _size;
+                      if(constraints.maxWidth <= 768.0) {
+                        if(constraints.maxHeight * 0.84 >= 4 * constraints.maxWidth / 3) _size = 4 * constraints.maxWidth / 3;
+                        else _size = constraints.maxHeight * 0.84;
+                      } else {
+                        if(constraints.maxWidth * 0.84 >= 3 * (constraints.maxHeight * 0.84) / 4) _size = constraints.maxHeight * 0.84;
+                        else _size = constraints.maxWidth * 0.84;
+                      }
+                      return PageView(
+                        controller: _pageController,
+                        physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
+                        clipBehavior: Clip.none,
+                        children: [
+                          Transform(
+                            transform: Matrix4.identity()..scale(lerpDouble(1.0, 0.6, _page.clamp(0.0, 1.0)))..rotateZ(lerpDouble(0.0, -0.16, _page.clamp(0.0, 1.0))!),
+                            alignment: Alignment.bottomCenter,
+                            child: MusicSheetWidget(
+                              MusicSheet(
+                                title: "Symphony No. 40",
+                                author: "W. Amadeus Mozart",
+                                items: 8,
+                                imagePath: "assets/images/symphony_no_40_",
+                                imageExtension: ".svg",
+                                audioPath: "assets/sounds/symphony_no_40_",
+                                audioExtension: ".mp3"
+                              ),
+                              size: _size,
+                              backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
+                            )
+                          ),
+                          Transform(
+                            transform: Matrix4.identity()..scale(lerpDouble(0.6, 1.0, _page.clamp(0.0, 1.0))!)..rotateZ(lerpDouble(0.16, 0.0, _page.clamp(0.0, 1.0))!),
+                            alignment: Alignment.bottomCenter,
+                            child: MusicSheetWidget(
+                              MusicSheet(
+                                title: "Symphony No. 5",
+                                author: "L. van Beethoven",
+                                items: 15,
+                                imagePath: "assets/images/symphony_no_5_",
+                                imageExtension: ".svg",
+                                audioPath: "assets/sounds/symphony_no_5_",
+                                audioExtension: ".mp3"
+                              ),
+                              size: _size,
+                              backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
+                            )
+                          )
+                        ]
+                      );
                     }
-                    return PageView(
-                      controller: _pageController,
-                      physics: (gameProvider.currentPuzzle == null) ?BouncingScrollPhysics() :NeverScrollableScrollPhysics(),
-                      clipBehavior: Clip.none,
-                      children: [
-                        Transform(
-                          transform: Matrix4.identity()..scale(lerpDouble(1.0, 0.6, _page.clamp(0.0, 1.0)))..rotateZ(lerpDouble(0.0, -0.16, _page.clamp(0.0, 1.0))!),
-                          alignment: Alignment.bottomCenter,
-                          child: MusicSheetWidget(
-                            MusicSheet(
-                              title: "Symphony No. 40",
-                              author: "W. Amadeus Mozart",
-                              items: 8,
-                              imagePath: "assets/images/symphony_no_40_",
-                              imageExtension: ".svg",
-                              audioPath: "assets/sounds/symphony_no_40_",
-                              audioExtension: ".mp3"
-                            ),
-                            size: _size,
-                            backgroundColor: Color.fromRGBO(198, 40, 40, 1.0)
-                          )
-                        ),
-                        Transform(
-                          transform: Matrix4.identity()..scale(lerpDouble(0.6, 1.0, _page.clamp(0.0, 1.0))!)..rotateZ(lerpDouble(0.16, 0.0, _page.clamp(0.0, 1.0))!),
-                          alignment: Alignment.bottomCenter,
-                          child: MusicSheetWidget(
-                            MusicSheet(
-                              title: "Symphony No. 5",
-                              author: "L. van Beethoven",
-                              items: 15,
-                              imagePath: "assets/images/symphony_no_5_",
-                              imageExtension: ".svg",
-                              audioPath: "assets/sounds/symphony_no_5_",
-                              audioExtension: ".mp3"
-                            ),
-                            size: _size,
-                            backgroundColor: Color.fromRGBO(83, 104, 120, 1.0)
-                          )
-                        )
-                      ]
-                    );
-                  }
+                  )
                 )
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: AnimatedBuilder(
-                  animation: _navigationBarAniamtionController,
-                  builder: (_, Widget? child) => FadeTransition(
-                    opacity: _navigationBarOpacityAniamtion,
-                    child: SlideTransition(
-                      position: _navigationBarOffsetAniamtion,
-                      child: child
-                    )
-                  ),
-                  child: Container(
-                    height: 14.0,
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.only(
-                      right: ((1 - _page) * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0,
-                      bottom: 10.0,
-                      left: (_page * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0
+                child: Padding(
+                  padding: MediaQuery.of(context).padding,
+                  child: AnimatedBuilder(
+                    animation: _navigationBarAniamtionController,
+                    builder: (_, Widget? child) => FadeTransition(
+                      opacity: _navigationBarOpacityAniamtion,
+                      child: SlideTransition(
+                        position: _navigationBarOffsetAniamtion,
+                        child: child
+                      )
                     ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).hintColor,
-                        borderRadius: BorderRadius.circular(100.0)
+                    child: Container(
+                      height: 14.0,
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.only(
+                        right: ((1 - _page) * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0,
+                        bottom: 10.0,
+                        left: (_page * ((MediaQuery.of(context).size.width - 40.0) / 2)) + 20.0
+                      ),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).hintColor,
+                          borderRadius: BorderRadius.circular(100.0)
+                        )
                       )
                     )
                   )
@@ -213,7 +231,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
               Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: MediaQuery.of(context).padding + EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -246,7 +264,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                       AnimatedBuilder(
                         animation: Listenable.merge([_resetOpacityAnimationController, _resetRotateAnimationController]),
                         builder: (_, Widget? child) => Visibility(
-                          visible: (_resetOpacityAnimationController.value != 0.0) && (!gameProvider.shake || MediaQuery.of(context).size.width >= 1024.0),
+                          visible: (_resetOpacityAnimationController.value != 0.0) && (!gameProvider.shake || UniversalPlatform.isDesktop || (UniversalPlatform.isWeb && MediaQuery.of(context).size.width >= 1024.0)),
                           child: FadeTransition(
                             opacity: _resetOpacityAnimation,
                             child: RotationTransition(
@@ -305,7 +323,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
               )
             ]
           )
-        ),
+        )
       )
     );
   }

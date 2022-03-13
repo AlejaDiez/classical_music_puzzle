@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shake/shake.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
 import '../models/music_sheet.dart';
@@ -23,8 +23,21 @@ class PuzzleProvider extends ChangeNotifier {
     _context = context;
     _gameProvider = gameProvider;
     _puzzleStateChange = puzzleStateChange;
-    _shakeDetector = ShakeDetector.autoStart(onPhoneShake: () {
-      if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
+    int shakeTimestamp = DateTime.now().millisecondsSinceEpoch;
+    _shakeDetector = accelerometerEvents.listen((AccelerometerEvent event) {
+      double x = event.x / 9.80665;
+      double y = event.y / 9.80665;
+      double z = event.z / 9.80665;
+
+      double gForce = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+      if (gForce > 2.7) {
+        var now = DateTime.now().millisecondsSinceEpoch;
+        if (shakeTimestamp + 500 <= now) {
+          shakeTimestamp = now;
+          if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
+        }
+      }
     });
     _rawKeyboard = RawKeyboard.instance..addListener((RawKeyEvent rawKeyEvent) {
       if(_puzzleState == PuzzleState.play) {
@@ -82,7 +95,7 @@ class PuzzleProvider extends ChangeNotifier {
   // Variables
   PuzzleState _puzzleState = PuzzleState.stop;
   late final Function(PuzzleState) _puzzleStateChange;
-  late final ShakeDetector _shakeDetector;
+  late final StreamSubscription<AccelerometerEvent> _shakeDetector;
   late final RawKeyboard _rawKeyboard;
   int _movements = 0;
   int? _slideObjectMoving;
@@ -281,7 +294,7 @@ class PuzzleProvider extends ChangeNotifier {
   @override
   void dispose() {
     _timer?.cancel();
-    _shakeDetector.stopListening();
+    _shakeDetector.cancel();
     _rawKeyboard.removeListener((RawKeyEvent rawKeyEvent) {});
     _audioPlayer.dispose();
     Future.microtask(() => super.dispose());

@@ -471,19 +471,9 @@ class _OnboardingViewState extends State<OnboardingView> with TickerProviderStat
                               borderRadius: BorderRadius.circular(((_slideObjectSize * 4) * 0.006 * 2) + ((_slideObjectSize * 4) * 0.012)),
                               color: Theme.of(context).hintColor.withOpacity(0.1)
                             ),
-                            child: Stack(
-                              children: [
-                                AnimatedPositioned(
-                                  duration: _animationDuration,
-                                  curve: Curves.decelerate,
-                                  top: _dragPosition,
-                                  onEnd: () => _animationDuration = Duration.zero,
-                                  child: _SlideObjectDemoWidget(
-                                    size: _slideObjectSize,
-                                    canLongPress: true
-                                  )
-                                )
-                              ]
+                            child: _SlideObjectDemoWidget(
+                              size: _slideObjectSize,
+                              canLongPress: true
                             )
                           )
                         ),
@@ -950,7 +940,7 @@ class __SlideObjectDemoWidgetState extends State<_SlideObjectDemoWidget> with Ti
     _scaleAnimationStep1 = Tween<double>(begin: 1.0, end: 0.9).animate(CurvedAnimation(parent: _scaleAudioAnimationController, curve: const Interval(0.0, 0.25, curve: Curves.easeIn)));
     _scaleAnimationStep2 = Tween<double>(begin: 0.9, end: 1.1).animate(CurvedAnimation(parent: _scaleAudioAnimationController, curve: const Interval(0.25, 0.75, curve: Curves.easeOut)));
     _scaleAnimationStep3 = Tween<double>(begin: 1.1, end: 1.0).animate(CurvedAnimation(parent: _scaleAudioAnimationController, curve: const Interval(0.75, 1.0, curve: Curves.easeIn)));
-    _audioPlayer = AssetsAudioPlayer()..open(Audio("assets/sounds/symphony_no_40_0.mp3"), autoStart: false, volume: 1.0);
+    _audioPlayer = AssetsAudioPlayer()..open(Audio("assets/sounds/onboarding.mp3"), autoStart: false, volume: 1.0);
     super.initState();
   }
 
