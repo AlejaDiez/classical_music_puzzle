@@ -1,4 +1,4 @@
-package com.aleja_diez.classical_music_puzzle
+package com.alejandrodiezbermejo.ClassicalMusicPuzzle
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
@@ -23,55 +22,6 @@ class PuzzleProvider extends ChangeNotifier {
     _context = context;
     _gameProvider = gameProvider;
     _puzzleStateChange = puzzleStateChange;
-    int shakeTimestamp = DateTime.now().millisecondsSinceEpoch;
-    _shakeDetector = accelerometerEvents.listen((AccelerometerEvent event) {
-      double x = event.x / 9.80665;
-      double y = event.y / 9.80665;
-      double z = event.z / 9.80665;
-
-      double gForce = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-
-      if (gForce > 2.7) {
-        var now = DateTime.now().millisecondsSinceEpoch;
-        if (shakeTimestamp + 500 <= now) {
-          shakeTimestamp = now;
-          if(_puzzleState == PuzzleState.play && gameProvider.shake) reset(effect: true);
-        }
-      }
-    });
-    _rawKeyboard = RawKeyboard.instance..addListener((RawKeyEvent rawKeyEvent) {
-      if(_puzzleState == PuzzleState.play) {
-        if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
-          for(SlideObject slideObject in _slideObjects) {
-            if(slideObject.currentPoint.x == _emptyPoint.x && slideObject.currentPoint.y - 1 == _emptyPoint.y) {
-              changeSlideObjectPoint(slideObject.index);
-              break;
-            } else continue;
-          }
-        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
-          for(SlideObject slideObject in _slideObjects) {
-            if(slideObject.currentPoint.y == _emptyPoint.y && slideObject.currentPoint.x + 1 == _emptyPoint.x) {
-              changeSlideObjectPoint(slideObject.index);
-              break;
-            } else continue;
-          }
-        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
-          for(SlideObject slideObject in _slideObjects) {
-            if(slideObject.currentPoint.x == _emptyPoint.x && slideObject.currentPoint.y + 1 == _emptyPoint.y) {
-              changeSlideObjectPoint(slideObject.index);
-              break;
-            } else continue;
-          }
-        } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
-          for(SlideObject slideObject in _slideObjects) {
-            if(slideObject.currentPoint.y == _emptyPoint.y && slideObject.currentPoint.x - 1 == _emptyPoint.x) {
-              changeSlideObjectPoint(slideObject.index);
-              break;
-            } else continue;
-          }
-        }
-      }
-    });
     _generateNewSolvableRandomPuzzle(false);
   }
 
@@ -95,8 +45,24 @@ class PuzzleProvider extends ChangeNotifier {
   // Variables
   PuzzleState _puzzleState = PuzzleState.stop;
   late final Function(PuzzleState) _puzzleStateChange;
-  late final StreamSubscription<AccelerometerEvent> _shakeDetector;
-  late final RawKeyboard _rawKeyboard;
+  int _shakeTimestamp = DateTime.now().millisecondsSinceEpoch;
+  late final StreamSubscription<AccelerometerEvent> _shakeDetector = accelerometerEvents.listen((AccelerometerEvent event) {
+    if(_gameProvider.shake) {
+      double x = event.x / 9.80665;
+      double y = event.y / 9.80665;
+      double z = event.z / 9.80665;
+
+      double gForce = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+      if (gForce > 2.7) {
+        var now = DateTime.now().millisecondsSinceEpoch;
+        if (_shakeTimestamp + 500 <= now) {
+          _shakeTimestamp = now;
+          if(_puzzleState == PuzzleState.play) reset(effect: true);
+        }
+      }
+    }
+  });
   int _movements = 0;
   int? _slideObjectMoving;
   late final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer()..setVolume(1.0)..isPlaying.listen((bool isPlaying) {
@@ -295,7 +261,6 @@ class PuzzleProvider extends ChangeNotifier {
   void dispose() {
     _timer?.cancel();
     _shakeDetector.cancel();
-    _rawKeyboard.removeListener((RawKeyEvent rawKeyEvent) {});
     _audioPlayer.dispose();
     Future.microtask(() => super.dispose());
   }

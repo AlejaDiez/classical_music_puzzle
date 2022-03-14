@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.aleja_diez.classical_music_puzzle">
+    package="com.alejandrodiezbermejo.ClassicalMusicPuzzle">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->

@@ -8,6 +8,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../models/music_sheet.dart';
+import '../models/slide_object.dart';
 import '../providers/game.dart';
 import '../providers/puzzle.dart';
 import '../views/achievements.dart';
@@ -108,11 +109,39 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
             if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowRight)) _pageController.nextPage(duration: const Duration(milliseconds: 800), curve: Curves.decelerate);
             else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowLeft)) _pageController.previousPage(duration: const Duration(milliseconds: 800), curve: Curves.decelerate);
           } else {
-            if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.escape)) gameProvider.changeCurrentPuzzle(null);
+            if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
+              for(SlideObject slideObject in gameProvider.currentPuzzle!.slideObjects) {
+                if(slideObject.currentPoint.x == gameProvider.currentPuzzle!.emptyPoint.x && slideObject.currentPoint.y - 1 == gameProvider.currentPuzzle!.emptyPoint.y) {
+                  gameProvider.currentPuzzle!.changeSlideObjectPoint(slideObject.index);
+                  break;
+                } else continue;
+              }
+            } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+              for(SlideObject slideObject in gameProvider.currentPuzzle!.slideObjects) {
+                if(slideObject.currentPoint.y == gameProvider.currentPuzzle!.emptyPoint.y && slideObject.currentPoint.x + 1 == gameProvider.currentPuzzle!.emptyPoint.x) {
+                  gameProvider.currentPuzzle!.changeSlideObjectPoint(slideObject.index);
+                  break;
+                } else continue;
+              }
+            } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+              for(SlideObject slideObject in gameProvider.currentPuzzle!.slideObjects) {
+                if(slideObject.currentPoint.x == gameProvider.currentPuzzle!.emptyPoint.x && slideObject.currentPoint.y + 1 == gameProvider.currentPuzzle!.emptyPoint.y) {
+                  gameProvider.currentPuzzle!.changeSlideObjectPoint(slideObject.index);
+                  break;
+                } else continue;
+              }
+            } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+              for(SlideObject slideObject in gameProvider.currentPuzzle!.slideObjects) {
+                if(slideObject.currentPoint.y == gameProvider.currentPuzzle!.emptyPoint.y && slideObject.currentPoint.x - 1 == gameProvider.currentPuzzle!.emptyPoint.x) {
+                  gameProvider.currentPuzzle!.changeSlideObjectPoint(slideObject.index);
+                  break;
+                } else continue;
+              }
+            } else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.escape)) gameProvider.changeCurrentPuzzle(null);
             else if(rawKeyEvent.isKeyPressed(LogicalKeyboardKey.keyR) && gameProvider.currentPuzzle!.puzzleState == PuzzleState.play) {
               gameProvider.currentPuzzle!.reset(effect: true);
               _resetRotateAnimationController.forward().whenComplete(() => _resetRotateAnimationController.reverse());
-            }
+            } 
           }
         },
         child: Container(

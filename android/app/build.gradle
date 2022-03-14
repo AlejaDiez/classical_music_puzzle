@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.aleja_diez.classical_music_puzzle"
+        applicationId "com.alejandrodiezbermejo.ClassicalMusicPuzzle"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode 1
