@@ -4,9 +4,9 @@ const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
   "version.json": "9dea5ad8010a4422fdd9d34453e40e9d",
-"index.html": "ffe42cf13a9fcbb09fd659ad9f264731",
-"/": "ffe42cf13a9fcbb09fd659ad9f264731",
-"main.dart.js": "befa28ca2c280e9d69371e4a5e541aed",
+"index.html": "247a672c25aba93a8943041bb84816d8",
+"/": "247a672c25aba93a8943041bb84816d8",
+"main.dart.js": "bfd949fa1a2729df9eaa02f2753838ae",
 "favicon.png": "a50ea8f51b6f040d8c4d7ce124b8ca5d",
 "icons/Icon-128.png": "6c7800e6ac5e61e1f29b1dfa9a5bf1d0",
 "icons/Icon-512.png": "69577e755d07312e75ce52a636576527",
@@ -68,7 +68,7 @@ const RESOURCES = {
 "assets/assets/sounds/symphony_no_5_8.mp3": "5314abe5f0f03806e27d513a74261e4a",
 "assets/assets/sounds/close_book_effect.mp3": "df3e0f088cb62c9ab185ce2e8a39aa67",
 "assets/assets/sounds/page_effect.mp3": "d4d2afd13147ec2e365a0cbc5498be33",
-"assets/assets/icons/background.svg": "745eacb09819180295d89ec2499e7e5e",
+"assets/assets/icons/background.svg": "858c5c214635b2f1bba8ffc28ec3d229",
 "assets/assets/icons/reset.svg": "3968e0b2d070f23bd708aa350360eff2",
 "assets/assets/icons/natural.svg": "4dcfe8fd3208cb6aeea56f3ee51afcce",
 "assets/assets/icons/finger.svg": "547506cab048b5365958853d7b385690",

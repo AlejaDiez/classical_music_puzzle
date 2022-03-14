@@ -29,7 +29,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
   late final PageController _pageController;
   double _page = 0.0;
   late final AnimationController _navigationBarAniamtionController, _backOpacityAnimationController, _backSlideAnimationController, _resetOpacityAnimationController, _resetRotateAnimationController, _settingsAnimationController, _initialAnimationController;
-  late final Animation<double> _navigationBarOpacityAniamtion, _backOpacityAnimation, _resetOpacityAnimation, _resetRotateAnimation, _settingsAnimation, _initialScaleAnimation, _initialAngleAnimation, _initialTranslationAnimation;
+  late final Animation<double> _navigationBarOpacityAniamtion, _backOpacityAnimation, _resetOpacityAnimation, _resetRotateAnimation, _settingsAnimation, _initialOpacityAnimation, _initialScaleAnimation, _initialAngleAnimation, _initialTranslationAnimation;
   late final Animation<Offset> _navigationBarOffsetAniamtion, _backOffsetAnimation;
 
   @override
@@ -50,6 +50,7 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
     _settingsAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     _settingsAnimation = Tween(begin: 0.0, end: 0.25).animate(CurvedAnimation(parent: _settingsAnimationController, curve: Curves.decelerate));
     _initialAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 800))..forward();
+    _initialOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
     _initialScaleAnimation = Tween(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
     _initialAngleAnimation = Tween(begin: 0.15, end: 0.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
     _initialTranslationAnimation = Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(parent: _initialAnimationController, curve: Curves.decelerate));
@@ -159,7 +160,14 @@ class _GameViewState extends State<GameView> with TickerProviderStateMixin {
                   right: -((event.hasData) ?event.data!.x :0.0) * 4,
                   bottom: ((event.hasData) ?event.data!.y :0.0) * 4,
                   left: ((event.hasData) ?event.data!.x :0.0) * 4,
-                  child: SvgPicture.asset("assets/icons/background.svg", color: Theme.of(context).hintColor.withOpacity(0.1), clipBehavior: Clip.none, fit: BoxFit.cover)
+                  child: AnimatedBuilder(
+                    animation: _initialAnimationController,
+                    builder: (_, Widget? child) => FadeTransition(
+                      opacity: _initialOpacityAnimation,
+                      child: child!
+                    ),
+                    child: SvgPicture.asset("assets/icons/background.svg", color: Theme.of(context).hintColor.withOpacity(0.1), clipBehavior: Clip.none, fit: BoxFit.cover)
+                  )
                 )
               ),
               Padding(
