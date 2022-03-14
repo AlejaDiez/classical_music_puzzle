@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classical Music Puzzle</title>
+    <meta name="description" content="A new form to enjoy classical music.">
+    <link rel="icon" type="image/png" href="./build/web/favicon.png"/>
+
+    <style>
+        @font-face {
+            font-family: OpenSans;
+            src: url("./assets/fonts/Open_Sans/Open_Sans_Bold.ttf");
+            font-weight: bold;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: rgb(255, 251, 242);
+            padding: 20px;
+        }
+
+        #title {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        #icon {
+            height: 200px;
+            width: 200px;
+            padding: 6.4px;
+        }
+        #icon div {
+            background-color: rgb(255, 251, 242);
+            border-radius: 9.6px;
+            box-shadow: 0px 0px 9.6px -1.92px rgba(108, 103, 94, 0.2);
+        }
+        svg {
+            fill: rgb(108, 103, 94);
+        }
+
+        h1 {
+            font-family: OpenSans;
+            font-weight: bold;
+            color: rgb(108, 103, 94);
+            font-size: 46px;
+            line-height: 1.3;
+            text-align: center;
+        }
+        .outline {
+            -webkit-text-stroke-width: 2px;
+            -webkit-text-stroke-color: rgb(108, 103, 94);
+            color: transparent;
+        }
+        a {
+            cursor: pointer;
+            font-family: OpenSans;
+            font-weight: bold;
+            font-size: 16px;
+            color: rgb(108, 103, 94);
+            text-align: center;
+            line-height: 1.0;
+            width: 100%;
+            padding: 20px;
+            background-color: rgb(255, 251, 242);
+            border-radius: 8px;
+            box-shadow: 0px 0px 20px -4px rgba(108, 103, 94, 0.2);
+            transition: transform;
+            transition-timing-function: ease;
+            transition-duration: 0.15s;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        a:active {transform: scale(0.9);}
+
+        @media (prefers-color-scheme: dark) {
+            body {background-color: rgb(18, 14, 14);}
+            h1 {color: rgb(255, 251, 242);}
+            #icon div {
+                background-color: rgb(18, 14, 14);
+                box-shadow: 0px 0px 9.6px -1.92px rgb(0, 0, 0);
+            }
+            svg {
+                fill: rgb(255, 251, 242);
+            }
+            .outline {-webkit-text-stroke-color: rgb(255, 251, 242);}
+            a {
+                background-color: rgb(18, 14, 14);
+                box-shadow: 0px 0px 20px -4px rgb(0, 0, 0);
+                color: rgb(255, 251, 242);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="title">
+        <div id="icon"><div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><g style="opacity:0.2"><rect y="766.02299" width="1024" height="16.63715"/><rect y="634.85233" width="1024" height="16.63715"/><rect y="503.68168" width="1024" height="16.63715"/><rect y="372.51102" width="1024" height="16.63715"/><rect y="241.33986" width="1024" height="16.63715"/></g><path d="M714.94328,262.01823V621.23777h-.14575a7.16767,7.16767,0,0,1,.14575,1.75793,61.82382,61.82382,0,0,1-4.54148,21.68179C703.81,661.52541,689.74562,678.08,668.20958,689.21422c-22.26747,11.57322-45.70809,14.79669-63.72737,10.401a31.73077,31.73077,0,0,1-4.39483-1.17136,36.9183,36.9183,0,0,1-6.007-2.49115,25.46632,25.46632,0,0,1-4.83388-2.6369,29.80052,29.80052,0,0,1-5.86037-4.54148,30.766,30.766,0,0,1-3.51587-3.95491,29.04186,29.04186,0,0,1-3.22348-4.98141c-10.10857-19.33817-.29239-45.269,22.26836-65.1929,2.19787-1.75794,4.54148-3.66252,7.03174-5.5671,1.61219-1.17136,3.22348-2.34361,4.98141-3.51586q5.05385-3.2968,10.54761-6.15278a104.53774,104.53774,0,0,1,29.88668-10.5485c2.78354-.58568,5.42045-.879,8.05735-1.17136a6.13542,6.13542,0,0,1,2.34361-.14664,49.28033,49.28033,0,0,1,6.44606-.43993,72.6703,72.6703,0,0,1,8.05824.29329c.14575.14664.14575.14664.2924,0,2.34451.29328,4.39573.73232,6.5927,1.02561,2.05122.58568,4.10244,1.02561,6.007,1.61129h.14575a30.23273,30.23273,0,0,1,4.98141,2.19786v-.14664a12.33582,12.33582,0,0,1,2.05122.879V322.8163L451.389,387.276V686.284c0,21.68179-13.33115,47.466-41.02,64.1673-1.90458,1.17225-3.80916,2.197-5.71374,3.22258-37.65074,19.63146-78.6707,15.38327-91.70946-9.37535-12.89123-24.90527,7.325-60.94472,44.97576-80.57529,27.10313-14.06437,55.96331-15.8223,74.86244-6.446V336.29409Z"/></svg></div></div>
+        <div style="height: 40px;"></div>
+        <h1>Classical Music</h1>
+        <h1 class="outline">Puzzle</h1>
+    </div>
+    <div id="buttons">
+        <a href="https://alejadiez.github.io/classical_music_puzzle/build/web" target="_self">Play</a>
+        <a href="https://alejadiez.github.io/classical_music_puzzle/build/Classical%20Music%20Puzzle.apk" download>Download app</a>
+        <a href="https://github.com/AlejaDiez/classical_music_puzzle" target="_blank">Open in Github</a>
+    </div>
+</body>
+</html>

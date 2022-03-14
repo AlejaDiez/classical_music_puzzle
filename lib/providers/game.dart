@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:vibration/vibration.dart';
@@ -17,6 +19,25 @@ class GameProvider extends ChangeNotifier {
       if(value == true) _vibrate = sharedPreferences.getBool('vibrate') ??true;
       else _vibrate = null;
     });
+
+    int _shakeTimestamp = DateTime.now().millisecondsSinceEpoch;
+    accelerometerEvents.listen((AccelerometerEvent event) {
+      if(this.shake && this._currentPuzzle != null) {
+        double x = event.x / 9.80665;
+        double y = event.y / 9.80665;
+        double z = event.z / 9.80665;
+
+        double gForce = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+        if (gForce > 2.7) {
+          var now = DateTime.now().millisecondsSinceEpoch;
+          if (_shakeTimestamp + 500 <= now) {
+            _shakeTimestamp = now;
+            if(this._currentPuzzle!.puzzleState == PuzzleState.play) this._currentPuzzle!.reset(effect: true);
+          }
+        }
+      }
+    });
   }
 
   final SharedPreferences sharedPreferences;
@@ -30,6 +51,7 @@ class GameProvider extends ChangeNotifier {
   late List<String> _achievements = sharedPreferences.getStringList('achievements') ??[];
   PuzzleProvider? _currentPuzzle;
   late Function(PuzzleProvider?) onCurrentPuzzleChange;
+
 
   Locale get locale => _locale;
   bool? get vibrate => _vibrate;
